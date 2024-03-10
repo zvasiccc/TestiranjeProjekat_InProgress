@@ -11,7 +11,7 @@ using TestiranjeProjekat.Data;
 namespace TestiranjeProjekat.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240310132225_V1")]
+    [Migration("20240310180756_V1")]
     partial class V1
     {
         /// <inheritdoc />
