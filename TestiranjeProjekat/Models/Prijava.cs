@@ -8,5 +8,7 @@
         public int potrebanBrojRacunara { get; set; }
         public int potrebanBrojTastatura {  get; set; }
         public int potrebanBrojMiseva { get; set; }
+        public List<PrijavaIgracSpoj> Igraci { get; set; }
+        public Turnir Turnir { get; set; }
     }
 }

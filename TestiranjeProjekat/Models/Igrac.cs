@@ -8,5 +8,6 @@
         public string Ime { get;set; }
         public string Prezime {  get; set; }
         public bool VodjaTima {  get; set; }
+        public List<PrijavaIgracSpoj> Prijave{ get; set; }
     }
 }

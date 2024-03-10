@@ -11,8 +11,8 @@ using TestiranjeProjekat.Data;
 namespace TestiranjeProjekat.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240310182841_V2")]
-    partial class V2
+    [Migration("20240310184615_V1")]
+    partial class V1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -97,6 +97,9 @@ namespace TestiranjeProjekat.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("TurnirId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("potrebanBrojMiseva")
                         .HasColumnType("integer");
 
@@ -111,7 +114,32 @@ namespace TestiranjeProjekat.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TurnirId");
+
                     b.ToTable("Prijave");
+                });
+
+            modelBuilder.Entity("TestiranjeProjekat.Models.PrijavaIgracSpoj", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IgracId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PrijavaId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IgracId");
+
+                    b.HasIndex("PrijavaId");
+
+                    b.ToTable("PrijavaIgracSpoj");
                 });
 
             modelBuilder.Entity("TestiranjeProjekat.Models.Turnir", b =>
@@ -150,6 +178,36 @@ namespace TestiranjeProjekat.Migrations
                     b.ToTable("Turniri");
                 });
 
+            modelBuilder.Entity("TestiranjeProjekat.Models.Prijava", b =>
+                {
+                    b.HasOne("TestiranjeProjekat.Models.Turnir", "Turnir")
+                        .WithMany("Prijave")
+                        .HasForeignKey("TurnirId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Turnir");
+                });
+
+            modelBuilder.Entity("TestiranjeProjekat.Models.PrijavaIgracSpoj", b =>
+                {
+                    b.HasOne("TestiranjeProjekat.Models.Igrac", "Igrac")
+                        .WithMany("PrijaveIgraca")
+                        .HasForeignKey("IgracId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TestiranjeProjekat.Models.Prijava", "Prijava")
+                        .WithMany("PrijavljeniIgraci")
+                        .HasForeignKey("PrijavaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Igrac");
+
+                    b.Navigation("Prijava");
+                });
+
             modelBuilder.Entity("TestiranjeProjekat.Models.Turnir", b =>
                 {
                     b.HasOne("TestiranjeProjekat.Models.Organizator", "Organizator")
@@ -161,9 +219,24 @@ namespace TestiranjeProjekat.Migrations
                     b.Navigation("Organizator");
                 });
 
+            modelBuilder.Entity("TestiranjeProjekat.Models.Igrac", b =>
+                {
+                    b.Navigation("PrijaveIgraca");
+                });
+
             modelBuilder.Entity("TestiranjeProjekat.Models.Organizator", b =>
                 {
                     b.Navigation("Turniri");
+                });
+
+            modelBuilder.Entity("TestiranjeProjekat.Models.Prijava", b =>
+                {
+                    b.Navigation("PrijavljeniIgraci");
+                });
+
+            modelBuilder.Entity("TestiranjeProjekat.Models.Turnir", b =>
+                {
+                    b.Navigation("Prijave");
                 });
 #pragma warning restore 612, 618
         }

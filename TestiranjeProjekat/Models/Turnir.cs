@@ -9,5 +9,7 @@
         public int MaxBrojTimova {  get; set; }
         public int Nagrada {  get; set; }
         public Organizator Organizator { get; set; }
+        public List<Prijava> Prijave { get;set; }
+
     }
 }
