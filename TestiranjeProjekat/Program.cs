@@ -11,9 +11,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 //builder.Services.AddScoped<IDogService, DogService>();
 //builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IIgracService,IgracService>();
+//builder.Services.AddScoped<IIgracService,IgracService>();
 builder.Services.AddScoped<IOrganizatorService,OrganizatorService>();
-builder.Services.AddScoped<ITurnirService, TurnirService>();
+//builder.Services.AddScoped<ITurnirService, TurnirService>();
 builder.Services.AddScoped<IPrijavaService, PrijavaService>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
