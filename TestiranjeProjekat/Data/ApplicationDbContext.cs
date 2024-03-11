@@ -20,6 +20,7 @@ namespace TestiranjeProjekat.Data
         public DbSet<Organizator> Organizatori { get; set; }
         public DbSet<Turnir> Turniri { get; set; }
         public DbSet<Prijava> Prijave { get; set; }
+        public DbSet<PrijavaIgracSpoj> PrijavaIgracSpoj { get; set; }
     
     }
 }

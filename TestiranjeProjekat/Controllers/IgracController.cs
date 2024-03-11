@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TestiranjeProjekat.Data;
+using TestiranjeProjekat.DTOs;
 using TestiranjeProjekat.Models;
 using TestiranjeProjekat.Service;
 
@@ -18,7 +19,16 @@ namespace TestiranjeProjekat.Controllers
             //_igracService = igracService;
             _context = context;
         }
-       
+        [HttpGet("vratiMoguceSaigrace/{igracId}")]
+        public async Task<List<Igrac>> VratiMoguceSaigrace(int igracId)
+            //todo izmeni parametar kao na git
+        {
+            var igraci=await _context.Igraci.Where(i=>i.Id!=igracId).ToListAsync();
+            if (igraci.Any())
+                return igraci;
+            return null;
+
+        }
         [HttpGet("korisnickoIme/{korisnickoIme}")]
         public async Task<List<Igrac>> IgraciSaSlicnimKorisnickimImenom(string korisnickoIme)
         {
@@ -53,8 +63,20 @@ namespace TestiranjeProjekat.Controllers
             }
             return igrac;
         }
-       // [HttpPut("izmeniPodatkeOIgracu")]
-
+       [HttpPut("izmeniPodatkeOIgracu/{igracId}")]
+        //todo izmeni parametar kao na git
+        public async Task IzmeniPodatkeOIgracu(int igracId,[FromBody]IgracDTO igrac)
+        {
+            var stariIgrac = await _context.Igraci.FindAsync(igracId);
+            if(stariIgrac==null)
+            {
+                return;
+            }
+            stariIgrac.Ime = igrac.Ime;
+            stariIgrac.Prezime = igrac.Prezime;
+            stariIgrac.KorisnickoIme = igrac.KorisnickoIme;
+            await _context.SaveChangesAsync();
+        }
         [HttpGet("daLiJeIgracPrijavljenNaTurnir/{turnirId}/{igracId}")]
         public async Task<bool> DaLiJeIgracPrijavljenNaTurnir(int turnirId,int igracId)
         {
@@ -63,6 +85,17 @@ namespace TestiranjeProjekat.Controllers
                 .Include(p => p.Turnir)
                 .FirstOrDefault(p => p.Turnir.Id == turnirId && p.Igraci.Any(i => i.Id == igracId));
             return trazenaPrijava != null;
+        }
+        [HttpGet("vratiIgraceIzIstogTima/{turnirId}/{igracId}")]
+        public async Task<List<Igrac>> VratiIgraceIzIstogTima(int turnirId,int igracId)
+        {
+           
+            var saigraci = await _context.PrijavaIgracSpoj
+                .Where(pis => pis.IgracId == igracId && pis.Prijava.Turnir.Id == turnirId)
+                .Select(pis=>pis.IgracId!=igracId)
+                .ToListAsync();
+            Console.WriteLine(saigraci);
+            return null;
         }
     }
 }
