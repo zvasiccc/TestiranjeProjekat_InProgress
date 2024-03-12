@@ -32,6 +32,7 @@ namespace TestiranjeProjekat.Controllers
                 MestoOdrzavanja = noviTurnirDTO.MestoOdrzavanja,
                 DatumOdrzavanja = noviTurnirDTO.DatumOdrzavanja,
                 MaxBrojTimova=noviTurnirDTO.MaxBrojTimova,
+                TrenutniBrojTimova=noviTurnirDTO.TrenutniBrojTimova,
                 Nagrada=noviTurnirDTO.Nagrada,
                 Organizator = organizatorTurnira
             };

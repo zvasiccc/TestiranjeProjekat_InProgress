@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using TestiranjeProjekat.Service;
+using System.Text.Json.Serialization;
 using TestiranjeProjekat.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,13 +8,18 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
+// Dodaj konfiguraciju za JSON serializer
+builder.Services.AddControllersWithViews().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+});
 
 //builder.Services.AddScoped<IDogService, DogService>();
 //builder.Services.AddScoped<IUserService, UserService>();
 //builder.Services.AddScoped<IIgracService,IgracService>();
-builder.Services.AddScoped<IOrganizatorService,OrganizatorService>();
+//builder.Services.AddScoped<IOrganizatorService,OrganizatorService>();
 //builder.Services.AddScoped<ITurnirService, TurnirService>();
-builder.Services.AddScoped<IPrijavaService, PrijavaService>();
+//builder.Services.AddScoped<IPrijavaService, PrijavaService>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using TestiranjeProjekat.Data;
 using TestiranjeProjekat.DTOs;
 using TestiranjeProjekat.Models;
-using TestiranjeProjekat.Service;
 
 namespace TestiranjeProjekat.Controllers
 {

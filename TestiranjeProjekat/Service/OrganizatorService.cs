@@ -1,8 +1,8 @@
-﻿namespace TestiranjeProjekat.Service
-{
-    public interface IOrganizatorService
-    { }
-    public class OrganizatorService:IOrganizatorService
-    {
-    }
-}
+﻿//namespace TestiranjeProjekat.Service
+//{
+//    public interface IOrganizatorService
+//    { }
+//    public class OrganizatorService:IOrganizatorService
+//    {
+//    }
+//}

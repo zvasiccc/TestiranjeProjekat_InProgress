@@ -7,6 +7,7 @@
         public string DatumOdrzavanja {  get; set; }
         public string MestoOdrzavanja { get; set; }
         public int MaxBrojTimova {  get; set; }
+        public int TrenutniBrojTimova { get; set; }
         public int Nagrada {  get; set; }
         public Organizator Organizator { get; set; }
         public List<Prijava>? Prijave { get;set; }

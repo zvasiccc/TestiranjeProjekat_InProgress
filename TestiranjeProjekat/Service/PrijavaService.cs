@@ -1,10 +1,10 @@
-﻿namespace TestiranjeProjekat.Service
-{
-    public interface IPrijavaService
-    {
+﻿//namespace TestiranjeProjekat.Service
+//{
+//    public interface IPrijavaService
+//    {
 
-    }
-    public class PrijavaService:IPrijavaService
-    {
-    }
-}
+//    }
+//    public class PrijavaService:IPrijavaService
+//    {
+//    }
+//}

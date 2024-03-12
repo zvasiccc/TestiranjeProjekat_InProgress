@@ -25,15 +25,20 @@ namespace TestiranjeProjekat.Controllers
             return prijava;
         }
         [HttpPost("dodajPrijavu")]
-        public async Task dodajPrijavu([FromBody] PrijavaDTO prijava)
+        public async Task<Prijava> dodajPrijavu([FromBody] PrijavaDTO prijava)
         {
+            
             var igraci = await _context.Igraci
                 .Where(i => prijava.IgraciId.Contains(i.Id))
                 .ToListAsync();
-            var turnir = await _context.Turniri.FindAsync(prijava.TurnirId);
+            int idTurnira = prijava.TurnirId; //ovo je 1
+            var turnir = await _context.Turniri.FindAsync(idTurnira);
+            turnir.TrenutniBrojTimova++;
+  
             Prijava novaPrijava = new Prijava
             {
                 NazivTima = prijava.NazivTima,
+
                 PotrebanBrojSlusalica = prijava.PotrebanBrojSlusalica,
                 PotrebanBrojRacunara = prijava.PotrebanBrojRacunara,
                 PotrebanBrojTastatura = prijava.PotrebanBrojTastatura,
@@ -47,7 +52,7 @@ namespace TestiranjeProjekat.Controllers
             }
             await _context.Prijave.AddAsync(novaPrijava);
             await _context.SaveChangesAsync();
-            
+            return novaPrijava;
         }
         [HttpGet("prijaveNaTurniru/{turnirId}")]
         public async Task<List<Prijava>> prijaveNaTurniru(int turnirId)
@@ -55,9 +60,41 @@ namespace TestiranjeProjekat.Controllers
             var prijave = await _context.Prijave
                 .Where(p => p.Turnir.Id == turnirId)
                 .Include(p => p.Turnir)
-                .Include(p => p.Igraci)
+                .Include(p => p.Igraci) //cikl
                 .ToListAsync();
             return prijave;
+        }
+        [HttpDelete("izbaciTimSaTurnira/{prijavaId}")]
+        public async Task IzbaciTimSaTurnira(int prijavaId)
+        {
+            var prijava = await _context.Prijave.Where(p => p.Id == prijavaId)
+                .Include(p => p.Turnir)
+                .Include(p => p.Igraci)
+                .FirstOrDefaultAsync();
+
+            if (prijava == null)
+                return;
+            var turnir = await _context.Turniri.FindAsync(prijava.Turnir.Id);
+            if (turnir == null) return;
+
+            turnir.TrenutniBrojTimova--;
+            turnir.Prijave.Remove(prijava);
+
+            _context.Prijave.Remove(prijava);
+            await _context.SaveChangesAsync();
+        }
+        [HttpDelete("odjaviSvojTimSaTurnira/{turnirId}/{igracId}")]
+        public async Task odjaviSvojTimSaTurnira(int turnirId,int igracId)
+        {
+            var prijava = await _context.Prijave
+                .Include(p => p.Igraci)
+                .Include(p => p.Turnir)
+                .FirstOrDefaultAsync(p => p.Turnir.Id == turnirId && p.Igraci.Any(i => i.Id == igracId));
+            var turnir = await _context.Turniri.FindAsync(turnirId);
+            if(turnir==null) return;
+            turnir.Prijave.Remove(prijava);
+            _context.Prijave.Remove(prijava);
+            await _context.SaveChangesAsync();
         }
     }
 }
