@@ -1,7 +1,10 @@
-﻿namespace TestiranjeProjekat.Models
+﻿using System.Text.Json.Serialization;
+
+namespace TestiranjeProjekat.Models
 {
     public class Igrac
     {
+       // [JsonIgnore]
         public int Id { get; set; }
         public string KorisnickoIme { get; set; }
         public string Lozinka { get; set; }

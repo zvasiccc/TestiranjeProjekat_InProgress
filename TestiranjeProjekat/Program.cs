@@ -20,7 +20,12 @@ builder.Services.AddControllersWithViews().AddJsonOptions(options =>
 //builder.Services.AddScoped<IOrganizatorService,OrganizatorService>();
 //builder.Services.AddScoped<ITurnirService, TurnirService>();
 //builder.Services.AddScoped<IPrijavaService, PrijavaService>();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.IgnoreNullValues = true; // Ignoriše null vrednosti
+        options.JsonSerializerOptions.IgnoreReadOnlyProperties = true; // Ignoriše samo za èitanje svojstva
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

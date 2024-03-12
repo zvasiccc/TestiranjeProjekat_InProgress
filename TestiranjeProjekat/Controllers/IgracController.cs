@@ -19,32 +19,30 @@ namespace TestiranjeProjekat.Controllers
             _context = context;
         }
         [HttpGet("vratiMoguceSaigrace/{igracId}")]
-        public async Task<List<Igrac>> VratiMoguceSaigrace(int igracId)
-            //todo izmeni parametar kao na git
+        public async Task<List<IgracDTO>> VratiMoguceSaigrace(int igracId)
+            //todo izmeni parametar kao na git, izbaci id
         {
-            var igraci=await _context.Igraci.Where(i=>i.Id!=igracId).ToListAsync();
-            if (igraci.Any())
-                return igraci;
-            return null;
-
+            var igraci = await _context.Igraci
+                .Where(i => i.Id != igracId)
+                .Select(i => new IgracDTO
+                {
+                    KorisnickoIme=i.KorisnickoIme,
+                    Ime = i.Ime,
+                    Prezime = i.Prezime,
+                    VodjaTima =i.VodjaTima
+                })
+                .ToListAsync();
+               return igraci;
         }
         [HttpGet("korisnickoIme/{korisnickoIme}")]
+        //todo bez id,dto
         public async Task<List<Igrac>> IgraciSaSlicnimKorisnickimImenom(string korisnickoIme)
         {
             var igraci = await _context.Igraci
                                            .Where(i => i.KorisnickoIme.Contains(korisnickoIme))
                                            .ToListAsync();
 
-            if (igraci.Any())
-            {
-
-                return igraci;
-            }
-            else
-            {
-
-                return null;
-            }
+            return igraci;
         }
         [HttpPost("registrujIgraca")]
         public async Task RegistrujIgraca(Igrac igrac)
@@ -56,10 +54,6 @@ namespace TestiranjeProjekat.Controllers
         public async Task<Igrac> DohvatiIgraca(string korisnickoIme)
         {
            var igrac=await _context.Igraci.FirstOrDefaultAsync(i=>i.KorisnickoIme==korisnickoIme);
-            if(igrac==null)
-            {
-                return null; //op
-            }
             return igrac;
         }
        [HttpPut("izmeniPodatkeOIgracu/{igracId}")]
@@ -77,24 +71,33 @@ namespace TestiranjeProjekat.Controllers
             await _context.SaveChangesAsync();
         }
         [HttpGet("daLiJeIgracPrijavljenNaTurnir/{turnirId}/{igracId}")]
-        public async Task<bool> DaLiJeIgracPrijavljenNaTurnir(int turnirId,int igracId)
+        public async Task<Prijava> DaLiJeIgracPrijavljenNaTurnir(int turnirId,int igracId)
         {
             var trazenaPrijava = _context.Prijave
                 .Include(p => p.Igraci)
                 .Include(p => p.Turnir)
                 .FirstOrDefault(p => p.Turnir.Id == turnirId && p.Igraci.Any(i => i.Id == igracId));
-            return trazenaPrijava != null;
+            return trazenaPrijava;
+            //todo aleksa, ima 2 idija, i ispituje pogresan 
         }
         [HttpGet("vratiIgraceIzIstogTima/{turnirId}/{igracId}")]
-        public async Task<List<Igrac>> VratiIgraceIzIstogTima(int turnirId,int igracId)
+        //todo lose radi
+        public async Task<List<IgracDTO>> VratiIgraceIzIstogTima(int turnirId,int igracId)
         {
-           
+
             var saigraci = await _context.PrijavaIgracSpoj
-                .Where(pis => pis.IgracId == igracId && pis.Prijava.Turnir.Id == turnirId)
-                .Select(pis=>pis.IgracId!=igracId)
-                .ToListAsync();
-            Console.WriteLine(saigraci);
-            return null;
+                 .Where(pis => pis.IgracId == igracId && pis.Prijava.Turnir.Id == turnirId)
+                 .SelectMany(pis => pis.Prijava.Igraci)
+                 .Where(prijava=> igracId!= igracId)
+                 .Select(i=> new IgracDTO
+                 {
+                     KorisnickoIme = i.Igrac.KorisnickoIme,
+                     Ime = i.Igrac.Ime,
+                     Prezime = i.Igrac.Prezime,
+                     VodjaTima = i.Igrac.VodjaTima
+                 })
+                 .ToListAsync();
+            return saigraci;
         }
     }
 }
