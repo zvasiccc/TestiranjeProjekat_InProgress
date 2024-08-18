@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.EntityFrameworkCore;
 using TestiranjeProjekat.DTOs;
 using TestiranjeProjekat.Models;
 
@@ -15,10 +15,28 @@ namespace TestiranjeProjekat.Controllers
             _context = context;
         }
         [HttpPost("registrujOrganizatora")]
-        public async Task registrujOrganizatora([FromBody] Organizator organizator)
+        public async Task<ActionResult> registrujOrganizatora([FromBody] Organizator organizator)
         {
+            //var postojeciOrganizator = await _context.Organizatori.FindAsync(organizator.Id);
+            var sviOrganizatori = await _context.Organizatori.ToListAsync();
+            //var postojeciOrganizatorId = await _context.Organizatori.FindAsync(organizator.Id);
+
+            var postojeciOrganizator = await _context.Organizatori.FirstOrDefaultAsync(o => o.KorisnickoIme == organizator.KorisnickoIme);
+            if (postojeciOrganizator != null)
+            {
+                Console.WriteLine(postojeciOrganizator.KorisnickoIme);
+                return Conflict("korisnicko ime vec postoji");
+            }
+            if (string.IsNullOrWhiteSpace(organizator.KorisnickoIme)
+            || string.IsNullOrWhiteSpace(organizator.Lozinka)
+            || string.IsNullOrWhiteSpace(organizator.Ime)
+            || string.IsNullOrWhiteSpace(organizator.Prezime))
+            {
+                return Conflict("uneli ste prazno polje");
+            }
             _context.Organizatori.Add(organizator);
             await _context.SaveChangesAsync();
+            return Ok();
         }
         [HttpGet("daLiJeOrganizatorTurnira/{organizatorId}/{turnirId}")]
         //todo zasto nece async?

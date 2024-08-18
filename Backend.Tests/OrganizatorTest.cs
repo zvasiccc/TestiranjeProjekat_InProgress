@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using TestiranjeProjekat.Controllers;
 using NUnit.Framework;
 using TestiranjeProjekat.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Backend.Tests
 {
@@ -49,6 +51,44 @@ namespace Backend.Tests
             Assert.AreEqual(lozinka, addedOrganizator.Lozinka);
             Assert.AreEqual(ime, addedOrganizator.Ime);
             Assert.AreEqual(prezime, addedOrganizator.Prezime);
+        }
+        [Test]
+        [TestCase("organizator1", "111", "Nikola", "Nikolic")]
+        public async Task CreateOrganizator_DuplicateUsername_ReturnsErrorMessage(string korisnickoIme, string lozinka, string ime, string prezime)
+        {
+
+            var organizatorController = new OrganizatorController(appContext);
+            var newOrganizator = new Organizator
+            {
+                KorisnickoIme = korisnickoIme,
+                Lozinka = lozinka,
+                Ime = ime,
+                Prezime = prezime
+
+            };
+            var result = await organizatorController.registrujOrganizatora(newOrganizator);
+            // Assert
+            Assert.IsInstanceOf<ConflictObjectResult>(result);
+            var conflictResult = result as ConflictObjectResult;
+            Assert.AreEqual("korisnicko ime vec postoji", conflictResult.Value);
+        }
+        [Test]
+        [TestCase("organizatorTest", "", "Nenad", "Nenadovic")]
+        public async Task CreateOrganizaor_EmptyField_ReturnsErrorMessage(string korisnickoIme, string lozinka, string ime, string prezime)
+        {
+            var organizatorController = new OrganizatorController(appContext);
+            var newOrganizator = new Organizator
+            {
+                KorisnickoIme = korisnickoIme,
+                Lozinka = lozinka,
+                Ime = ime,
+                Prezime = prezime
+            };
+            var result = await organizatorController.registrujOrganizatora(newOrganizator);
+            Assert.IsInstanceOf<ConflictObjectResult>(result);
+            var conflictResult = result as ConflictObjectResult;
+            Assert.AreEqual("uneli ste prazno polje", conflictResult.Value);
+
         }
         [OneTimeTearDown]
         public void TearDown()
