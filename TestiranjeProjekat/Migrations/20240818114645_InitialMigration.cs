@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace TestiranjeProjekat.Migrations
 {
     /// <inheritdoc />
-    public partial class V1 : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -54,6 +54,7 @@ namespace TestiranjeProjekat.Migrations
                     DatumOdrzavanja = table.Column<string>(type: "text", nullable: false),
                     MestoOdrzavanja = table.Column<string>(type: "text", nullable: false),
                     MaxBrojTimova = table.Column<int>(type: "integer", nullable: false),
+                    TrenutniBrojTimova = table.Column<int>(type: "integer", nullable: false),
                     Nagrada = table.Column<int>(type: "integer", nullable: false),
                     OrganizatorId = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -75,10 +76,10 @@ namespace TestiranjeProjekat.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     NazivTima = table.Column<string>(type: "text", nullable: false),
-                    potrebanBrojSlusalica = table.Column<int>(type: "integer", nullable: false),
-                    potrebanBrojRacunara = table.Column<int>(type: "integer", nullable: false),
-                    potrebanBrojTastatura = table.Column<int>(type: "integer", nullable: false),
-                    potrebanBrojMiseva = table.Column<int>(type: "integer", nullable: false),
+                    PotrebanBrojSlusalica = table.Column<int>(type: "integer", nullable: false),
+                    PotrebanBrojRacunara = table.Column<int>(type: "integer", nullable: false),
+                    PotrebanBrojTastatura = table.Column<int>(type: "integer", nullable: false),
+                    PotrebanBrojMiseva = table.Column<int>(type: "integer", nullable: false),
                     TurnirId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
