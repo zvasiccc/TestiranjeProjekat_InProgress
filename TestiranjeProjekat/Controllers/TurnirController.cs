@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using TestiranjeProjekat.Data;
+
 using TestiranjeProjekat.DTOs;
 using TestiranjeProjekat.Models;
 
@@ -10,16 +10,17 @@ namespace TestiranjeProjekat.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TurnirController:ControllerBase
+    public class TurnirController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        public TurnirController(ApplicationDbContext context)
+        private readonly AppDbContext _context;
+        public TurnirController(AppDbContext context)
         {
-               _context = context ;
+            _context = context;
         }
         [HttpGet("sviTurniri")]
-        public async Task<List<Turnir>> VratiSveTurnire() {
-           return  await _context.Turniri.ToListAsync();
+        public async Task<List<Turnir>> VratiSveTurnire()
+        {
+            return await _context.Turniri.ToListAsync();
         }
         [HttpGet("mojiTurniri/{igracid}")]
         public async Task<List<TurnirDTO>> MojiTurniri(int igracId)
@@ -34,25 +35,25 @@ namespace TestiranjeProjekat.Controllers
                     MaxBrojTimova = pis.Prijava.Turnir.MaxBrojTimova,
                     TrenutniBrojTimova = pis.Prijava.Turnir.TrenutniBrojTimova,
                     Nagrada = pis.Prijava.Turnir.Nagrada,
-                    OrganizatorId=pis.Prijava.Turnir.Organizator.Id
+                    OrganizatorId = pis.Prijava.Turnir.Organizator.Id
                 })
                 .ToListAsync();
             return turniri;
-         }
+        }
         [HttpPost("dodajTurnir")]
         public async Task DodajTurnir(TurnirDTO noviTurnirDTO)
         {
             var organizatorTurnira = await _context.Organizatori.FindAsync(noviTurnirDTO.OrganizatorId);
-            if (organizatorTurnira==null)
+            if (organizatorTurnira == null)
                 return;
             Turnir noviTurnir = new Turnir
             {
                 Naziv = noviTurnirDTO.Naziv,
                 MestoOdrzavanja = noviTurnirDTO.MestoOdrzavanja,
                 DatumOdrzavanja = noviTurnirDTO.DatumOdrzavanja,
-                MaxBrojTimova=noviTurnirDTO.MaxBrojTimova,
-                TrenutniBrojTimova=noviTurnirDTO.TrenutniBrojTimova,
-                Nagrada=noviTurnirDTO.Nagrada,
+                MaxBrojTimova = noviTurnirDTO.MaxBrojTimova,
+                TrenutniBrojTimova = noviTurnirDTO.TrenutniBrojTimova,
+                Nagrada = noviTurnirDTO.Nagrada,
                 Organizator = organizatorTurnira
             };
             await _context.Turniri.AddAsync(noviTurnir);
@@ -98,7 +99,7 @@ namespace TestiranjeProjekat.Controllers
 
             if (pretragaPocetnaNagrada > 0)
             {
-                query = query.Where(t => t.Nagrada >=pretragaPocetnaNagrada);
+                query = query.Where(t => t.Nagrada >= pretragaPocetnaNagrada);
             }
 
             if (pretragaKrajnjaNagrada > 0)
@@ -111,7 +112,7 @@ namespace TestiranjeProjekat.Controllers
             return turniri;
         }
         [HttpDelete("obrisiTurnir/{turnirId}")]
-        public async Task ObrisiTurnir(int turnirId )
+        public async Task ObrisiTurnir(int turnirId)
         {
             var turnir = await _context.Turniri.FindAsync(turnirId);
             _context.Turniri.Remove(turnir);

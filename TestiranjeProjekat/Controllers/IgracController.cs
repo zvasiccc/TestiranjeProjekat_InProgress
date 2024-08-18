@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TestiranjeProjekat.Data;
 using TestiranjeProjekat.DTOs;
 using TestiranjeProjekat.Models;
 
@@ -8,31 +7,31 @@ namespace TestiranjeProjekat.Controllers
 {
     [ApiController]
     //Route("[controller]")]
-    [Route("[controller]")]
-    public class IgracController:ControllerBase
+    [Route("/pufla")]
+    public class IgracController : ControllerBase
     {
-       // private readonly IgracService _igracService;
-       private readonly ApplicationDbContext _context;
-        public IgracController(ApplicationDbContext context)
+        // private readonly IgracService _igracService;
+        private readonly AppDbContext _context;
+        public IgracController(AppDbContext context)
         {
             //_igracService = igracService;
             _context = context;
         }
         [HttpGet("vratiMoguceSaigrace/{igracId}")]
         public async Task<List<IgracDTO>> VratiMoguceSaigrace(int igracId)
-            //todo izmeni parametar kao na git, izbaci id
-        {
+        //todo izmeni parametar kao na git, izbaci id
+        {//u postmana prolazi to
             var igraci = await _context.Igraci
                 .Where(i => i.Id != igracId)
                 .Select(i => new IgracDTO
                 {
-                    KorisnickoIme=i.KorisnickoIme,
+                    KorisnickoIme = i.KorisnickoIme,
                     Ime = i.Ime,
                     Prezime = i.Prezime,
-                    VodjaTima =i.VodjaTima
+                    VodjaTima = i.VodjaTima
                 })
                 .ToListAsync();
-               return igraci;
+            return igraci;
         }
         [HttpGet("korisnickoIme/{korisnickoIme}")]
         //todo bez id,dto
@@ -53,15 +52,15 @@ namespace TestiranjeProjekat.Controllers
         [HttpGet("dohvatiIgraca/{korisnickoIme}")]
         public async Task<Igrac> DohvatiIgraca(string korisnickoIme)
         {
-           var igrac=await _context.Igraci.FirstOrDefaultAsync(i=>i.KorisnickoIme==korisnickoIme);
+            var igrac = await _context.Igraci.FirstOrDefaultAsync(i => i.KorisnickoIme == korisnickoIme);
             return igrac;
         }
-       [HttpPut("izmeniPodatkeOIgracu/{igracId}")]
+        [HttpPut("izmeniPodatkeOIgracu/{igracId}")]
         //todo izmeni parametar kao na git
-        public async Task IzmeniPodatkeOIgracu(int igracId,[FromBody]IgracDTO igrac)
+        public async Task IzmeniPodatkeOIgracu(int igracId, [FromBody] IgracDTO igrac)
         {
             var stariIgrac = await _context.Igraci.FindAsync(igracId);
-            if(stariIgrac==null)
+            if (stariIgrac == null)
             {
                 return;
             }
@@ -71,7 +70,7 @@ namespace TestiranjeProjekat.Controllers
             await _context.SaveChangesAsync();
         }
         [HttpGet("daLiJeIgracPrijavljenNaTurnir/{turnirId}/{igracId}")]
-        public async Task<Prijava> DaLiJeIgracPrijavljenNaTurnir(int turnirId,int igracId)
+        public async Task<Prijava> DaLiJeIgracPrijavljenNaTurnir(int turnirId, int igracId)
         {
             var trazenaPrijava = _context.Prijave
                 .Include(p => p.Igraci)
@@ -82,14 +81,14 @@ namespace TestiranjeProjekat.Controllers
         }
         [HttpGet("vratiIgraceIzIstogTima/{turnirId}/{igracId}")]
         //todo lose radi
-        public async Task<List<IgracDTO>> VratiIgraceIzIstogTima(int turnirId,int igracId)
+        public async Task<List<IgracDTO>> VratiIgraceIzIstogTima(int turnirId, int igracId)
         {
 
             var saigraci = await _context.PrijavaIgracSpoj
                  .Where(pis => pis.IgracId == igracId && pis.Prijava.Turnir.Id == turnirId)
                  .SelectMany(pis => pis.Prijava.Igraci)
-                 .Where(prijava=> igracId!= igracId)
-                 .Select(i=> new IgracDTO
+                 .Where(prijava => igracId != igracId)
+                 .Select(i => new IgracDTO
                  {
                      KorisnickoIme = i.Igrac.KorisnickoIme,
                      Ime = i.Igrac.Ime,
@@ -98,6 +97,7 @@ namespace TestiranjeProjekat.Controllers
                  })
                  .ToListAsync();
             return saigraci;
+
         }
     }
 }

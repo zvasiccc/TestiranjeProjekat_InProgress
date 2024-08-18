@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TestiranjeProjekat.Data;
+
 using TestiranjeProjekat.DTOs;
 using TestiranjeProjekat.Models;
 
@@ -7,10 +7,10 @@ namespace TestiranjeProjekat.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class OrganizatorController:ControllerBase
+    public class OrganizatorController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        public OrganizatorController(ApplicationDbContext context)
+        private readonly AppDbContext _context;
+        public OrganizatorController(AppDbContext context)
         {
             _context = context;
         }
@@ -24,7 +24,7 @@ namespace TestiranjeProjekat.Controllers
         //todo zasto nece async?
         public async Task<bool> daLiJeOrganizatorTurnira(int organizatorId, int turnirId)
         {
-            var organizator =  _context.Turniri
+            var organizator = _context.Turniri
                 .Where(t => t.Id == turnirId)
                 .Select(t => t.Organizator)
                 .FirstOrDefault();
@@ -32,7 +32,7 @@ namespace TestiranjeProjekat.Controllers
         }
         [HttpPut("izmeniPodatkeOOrganizatoru/{organizatorId}")]
         //todo ubaci req
-        public async Task izmeniPodatkeOOrganizatoru(int organizatorId,[FromBody] OrganizatorDTO organizator)
+        public async Task izmeniPodatkeOOrganizatoru(int organizatorId, [FromBody] OrganizatorDTO organizator)
         {
             var postojeciOrganizator = await _context.Organizatori.FindAsync(organizatorId);
             if (postojeciOrganizator == null)
