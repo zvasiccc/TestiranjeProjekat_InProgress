@@ -46,8 +46,6 @@ namespace Backend.Tests
             };
             await organizatorController.registrujOrganizatora(newOrganizator);
             var addedOrganizator = appContext.Organizatori.FirstOrDefault(o => o.KorisnickoIme == korisnickoIme);
-
-
             // Assert.IsNotNull(addedOrganizator, "Organizator nije dodat u bazu.");
             Assert.AreEqual(korisnickoIme, addedOrganizator.KorisnickoIme);
             Assert.AreEqual(lozinka, addedOrganizator.Lozinka);

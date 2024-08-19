@@ -44,10 +44,11 @@ namespace TestiranjeProjekat.Controllers
             return igraci;
         }
         [HttpPost("registrujIgraca")]
-        public async Task RegistrujIgraca(Igrac igrac)
+        public async Task<ActionResult> RegistrujIgraca(Igrac igrac)
         {
             _context.Igraci.Add(igrac);
             await _context.SaveChangesAsync();
+            return Ok();
         }
         [HttpGet("dohvatiIgraca/{korisnickoIme}")]
         public async Task<Igrac> DohvatiIgraca(string korisnickoIme)
