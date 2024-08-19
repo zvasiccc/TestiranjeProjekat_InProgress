@@ -41,6 +41,7 @@ namespace TestiranjeProjekat.Controllers
         [HttpGet("dohvatiOrganizatora/{korisnickoIme}")]
         public async Task<Organizator> dohvatiOrganizatora(string korisnickoIme)
         {
+
             var organizator = await _context.Organizatori.FirstOrDefaultAsync(o => o.KorisnickoIme == korisnickoIme);
             return organizator;//vraca null ili organizatora
         }
@@ -56,15 +57,36 @@ namespace TestiranjeProjekat.Controllers
         }
         [HttpPut("izmeniPodatkeOOrganizatoru/{organizatorId}")]
         //todo ubaci req
-        public async Task izmeniPodatkeOOrganizatoru(int organizatorId, [FromBody] OrganizatorDTO organizator)
+        public async Task<ActionResult> izmeniPodatkeOOrganizatoru(int organizatorId, [FromBody] OrganizatorDTO organizator)
+
+
         {
             var postojeciOrganizator = await _context.Organizatori.FindAsync(organizatorId);
             if (postojeciOrganizator == null)
-                throw new Exception("ne postoji takav organizator");
+                return Conflict("ne postoji takav organizator");
+            if (string.IsNullOrWhiteSpace(organizator.KorisnickoIme)
+           || string.IsNullOrWhiteSpace(organizator.Ime)
+           || string.IsNullOrWhiteSpace(organizator.Prezime))
+            {
+                return Conflict("uneli ste prazno polje");
+            }
             postojeciOrganizator.Ime = organizator.Ime;
             postojeciOrganizator.Prezime = organizator.Prezime;
             postojeciOrganizator.KorisnickoIme = organizator.KorisnickoIme;
             await _context.SaveChangesAsync();
+            return Ok();
+
+        }
+        public async Task<ActionResult> obrisiOrganizatora(string korisnickoIme)
+        {
+            if (string.IsNullOrWhiteSpace(korisnickoIme))
+                return Conflict("uneli ste prazno polje");
+            var organizator = await _context.Organizatori.FirstOrDefaultAsync(o => o.KorisnickoIme == korisnickoIme);
+            if (organizator == null)
+                return Conflict("nepostojeci organizator");
+            _context.Organizatori.Remove(organizator);
+            await _context.SaveChangesAsync();
+            return Ok();
 
         }
     }
