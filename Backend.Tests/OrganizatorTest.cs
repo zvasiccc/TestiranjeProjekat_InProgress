@@ -30,6 +30,7 @@ namespace Backend.Tests
             appContext.SaveChanges();
             organizatorController = new OrganizatorController(appContext);
         }
+        //create
         [Test]
         [TestCase("NekiOrganizator", "123", "Jovan", "Jovanovic")]
         public async Task CreateOrganizator_SuccessfullyAddsAdmin_ReturnSuccessMessage(string korisnickoIme, string lozinka, string ime, string prezime)
@@ -90,6 +91,23 @@ namespace Backend.Tests
             Assert.AreEqual("uneli ste prazno polje", conflictResult.Value);
 
         }
+        //read
+        [Test]
+        [TestCase("organizator1")]
+        public async Task getOrganizator_ReturnsSuccess(string korisnickoIme)
+        {
+            var result = await organizatorController.dohvatiOrganizatora(korisnickoIme);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.TypeOf<Organizator>());
+        }
+        [Test]
+        [TestCase("nepostojeciOrganizator")]
+        public async Task getOrganizator_NonExistingOrganizator(string korisnickoIme)
+        {
+            var result = await organizatorController.dohvatiOrganizatora(korisnickoIme);
+            Assert.That(result, Is.Null);
+        }
+
         [OneTimeTearDown]
         public void TearDown()
         {

@@ -38,6 +38,12 @@ namespace TestiranjeProjekat.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+        [HttpGet("dohvatiOrganizatora/{korisnickoIme}")]
+        public async Task<Organizator> dohvatiOrganizatora(string korisnickoIme)
+        {
+            var organizator = await _context.Organizatori.FirstOrDefaultAsync(o => o.KorisnickoIme == korisnickoIme);
+            return organizator;//vraca null ili organizatora
+        }
         [HttpGet("daLiJeOrganizatorTurnira/{organizatorId}/{turnirId}")]
         //todo zasto nece async?
         public async Task<bool> daLiJeOrganizatorTurnira(int organizatorId, int turnirId)
