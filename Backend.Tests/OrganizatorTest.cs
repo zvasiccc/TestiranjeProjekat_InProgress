@@ -5,6 +5,7 @@ using TestiranjeProjekat.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
 using TestiranjeProjekat.DTOs;
+using TestiranjeProjekat.Exceptions;
 
 namespace Backend.Tests
 {
@@ -46,7 +47,7 @@ namespace Backend.Tests
             };
             await organizatorController.registrujOrganizatora(newOrganizator);
             var addedOrganizator = appContext.Organizatori.FirstOrDefault(o => o.KorisnickoIme == korisnickoIme);
-            // Assert.IsNotNull(addedOrganizator, "Organizator nije dodat u bazu.");
+
             Assert.AreEqual(korisnickoIme, addedOrganizator.KorisnickoIme);
             Assert.AreEqual(lozinka, addedOrganizator.Lozinka);
             Assert.AreEqual(ime, addedOrganizator.Ime);
@@ -66,11 +67,9 @@ namespace Backend.Tests
                 Prezime = prezime
 
             };
-            var result = await organizatorController.registrujOrganizatora(newOrganizator);
-            // Assert
-            Assert.IsInstanceOf<ConflictObjectResult>(result);
-            var conflictResult = result as ConflictObjectResult;
-            Assert.AreEqual("korisnicko ime vec postoji", conflictResult.Value);
+
+            Assert.ThrowsAsync<ExistingOrganizatorException>(async () => await organizatorController.registrujOrganizatora(newOrganizator));
+
         }
         [Test]
         [TestCase("organizatorTest", "", "Nenad", "Nenadovic")]
@@ -84,10 +83,7 @@ namespace Backend.Tests
                 Ime = ime,
                 Prezime = prezime
             };
-            var result = await organizatorController.registrujOrganizatora(newOrganizator);
-            Assert.IsInstanceOf<ConflictObjectResult>(result);
-            var conflictResult = result as ConflictObjectResult;
-            Assert.AreEqual("uneli ste prazno polje", conflictResult.Value);
+            Assert.ThrowsAsync<EmptyFieldException>(async () => await organizatorController.registrujOrganizatora(newOrganizator));
 
         }
         //read
@@ -135,10 +131,7 @@ namespace Backend.Tests
                 Ime = ime,
                 Prezime = prezime
             };
-            var result = await organizatorController.izmeniPodatkeOOrganizatoru(organizatorId, newDataOrganizator);
-            Assert.IsInstanceOf<ConflictObjectResult>(result);
-            var conflictResult = result as ConflictObjectResult;
-            Assert.AreEqual("ne postoji takav organizator", conflictResult.Value);
+            Assert.ThrowsAsync<NonExistingOrganizatorException>(async () => await organizatorController.izmeniPodatkeOOrganizatoru(organizatorId, newDataOrganizator));
         }
 
         // [Test]
@@ -163,27 +156,24 @@ namespace Backend.Tests
         [TestCase("organizator2")]
         public async Task deleteOrganizator_Succes(string korisnickoIme)
         {
-            var result = await organizatorController.obrisiOrganizatora(korisnickoIme);
-            Assert.IsInstanceOf<OkResult>(result); //todo da li ovako ili trazim opet organizatora u bazi da proverim?
+            await organizatorController.obrisiOrganizatora(korisnickoIme);
+            var organizator = await appContext.Organizatori.FirstOrDefaultAsync(o => o.KorisnickoIme == korisnickoIme);
+            Assert.Null(organizator);
 
         }
         [Test]
         [TestCase("")]
         public async Task deleteOrganizator_EmptyField(string korisnickoIme)
         {
-            var result = await organizatorController.obrisiOrganizatora(korisnickoIme);
-            Assert.IsInstanceOf<ConflictObjectResult>(result);
-            var conflictResult = result as ConflictObjectResult;
-            Assert.AreEqual("uneli ste prazno polje", conflictResult.Value);
+
+            Assert.ThrowsAsync<EmptyFieldException>(async () => await organizatorController.obrisiOrganizatora(korisnickoIme));
         }
         [Test]
         [TestCase("Organizator123")]
         public async Task deleteOrganizator_WrongUsername(string korisnickoIme)
         {
-            var result = await organizatorController.obrisiOrganizatora(korisnickoIme);
-            Assert.IsInstanceOf<ConflictObjectResult>(result);
-            var conflictResult = result as ConflictObjectResult;
-            Assert.AreEqual("nepostojeci organizator", conflictResult.Value);
+
+            Assert.ThrowsAsync<NonExistingOrganizatorException>(async () => await organizatorController.obrisiOrganizatora(korisnickoIme));
         }
         [OneTimeTearDown]
         public void TearDown()

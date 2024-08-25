@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TestiranjeProjekat.DTOs;
+using TestiranjeProjekat.Exceptions;
 using TestiranjeProjekat.Models;
-
 namespace TestiranjeProjekat.Controllers
 {
     [ApiController]
@@ -44,11 +44,16 @@ namespace TestiranjeProjekat.Controllers
             return igraci;
         }
         [HttpPost("registrujIgraca")]
-        public async Task<ActionResult> RegistrujIgraca(Igrac igrac)
+        public async Task RegistrujIgraca(Igrac igrac)
         {
+            var postojeciIgrac = await _context.Igraci.FirstOrDefaultAsync(i => i.KorisnickoIme == igrac.KorisnickoIme);
+            if (postojeciIgrac != null)
+            {
+                throw new ExistingPlayerException();
+            }
             _context.Igraci.Add(igrac);
             await _context.SaveChangesAsync();
-            return Ok();
+            return;
         }
         [HttpGet("dohvatiIgraca/{korisnickoIme}")]
         public async Task<Igrac> DohvatiIgraca(string korisnickoIme)

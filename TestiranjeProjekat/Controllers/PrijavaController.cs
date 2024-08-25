@@ -36,7 +36,6 @@ namespace TestiranjeProjekat.Controllers
             Prijava novaPrijava = new Prijava
             {
                 NazivTima = prijava.NazivTima,
-
                 PotrebanBrojSlusalica = prijava.PotrebanBrojSlusalica,
                 PotrebanBrojRacunara = prijava.PotrebanBrojRacunara,
                 PotrebanBrojTastatura = prijava.PotrebanBrojTastatura,

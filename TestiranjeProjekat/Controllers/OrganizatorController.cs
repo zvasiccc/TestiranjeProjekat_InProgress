@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using TestiranjeProjekat.DTOs;
 using TestiranjeProjekat.Models;
-
+using TestiranjeProjekat.Exceptions;
 namespace TestiranjeProjekat.Controllers
 {
     [ApiController]
@@ -15,28 +15,25 @@ namespace TestiranjeProjekat.Controllers
             _context = context;
         }
         [HttpPost("registrujOrganizatora")]
-        public async Task<ActionResult> registrujOrganizatora([FromBody] Organizator organizator)
+        public async Task registrujOrganizatora([FromBody] Organizator organizator)
         {
-            //var postojeciOrganizator = await _context.Organizatori.FindAsync(organizator.Id);
-            var sviOrganizatori = await _context.Organizatori.ToListAsync();
-            //var postojeciOrganizatorId = await _context.Organizatori.FindAsync(organizator.Id);
 
             var postojeciOrganizator = await _context.Organizatori.FirstOrDefaultAsync(o => o.KorisnickoIme == organizator.KorisnickoIme);
             if (postojeciOrganizator != null)
             {
-                Console.WriteLine(postojeciOrganizator.KorisnickoIme);
-                return Conflict("korisnicko ime vec postoji");
+
+                throw new ExistingOrganizatorException();
             }
             if (string.IsNullOrWhiteSpace(organizator.KorisnickoIme)
             || string.IsNullOrWhiteSpace(organizator.Lozinka)
             || string.IsNullOrWhiteSpace(organizator.Ime)
             || string.IsNullOrWhiteSpace(organizator.Prezime))
             {
-                return Conflict("uneli ste prazno polje");
+                throw new EmptyFieldException();
             }
             _context.Organizatori.Add(organizator);
             await _context.SaveChangesAsync();
-            return Ok();
+            return;
         }
         [HttpGet("dohvatiOrganizatora/{korisnickoIme}")]
         public async Task<Organizator> dohvatiOrganizatora(string korisnickoIme)
@@ -57,33 +54,33 @@ namespace TestiranjeProjekat.Controllers
         }
         [HttpPut("izmeniPodatkeOOrganizatoru/{organizatorId}")]
         //todo ubaci req
-        public async Task<ActionResult> izmeniPodatkeOOrganizatoru(int organizatorId, [FromBody] OrganizatorDTO organizator)
+        public async Task izmeniPodatkeOOrganizatoru(int organizatorId, [FromBody] OrganizatorDTO organizator)
 
 
         {
             var postojeciOrganizator = await _context.Organizatori.FindAsync(organizatorId);
             if (postojeciOrganizator == null)
-                return Conflict("ne postoji takav organizator");
+                throw new NonExistingOrganizatorException();
             if (string.IsNullOrWhiteSpace(organizator.KorisnickoIme)
            || string.IsNullOrWhiteSpace(organizator.Ime)
            || string.IsNullOrWhiteSpace(organizator.Prezime))
             {
-                return Conflict("uneli ste prazno polje");
+                throw new EmptyFieldException();
             }
             postojeciOrganizator.Ime = organizator.Ime;
             postojeciOrganizator.Prezime = organizator.Prezime;
             postojeciOrganizator.KorisnickoIme = organizator.KorisnickoIme;
             await _context.SaveChangesAsync();
-            return Ok();
+            return;
 
         }
         public async Task<ActionResult> obrisiOrganizatora(string korisnickoIme)
         {
             if (string.IsNullOrWhiteSpace(korisnickoIme))
-                return Conflict("uneli ste prazno polje");
+                throw new EmptyFieldException();
             var organizator = await _context.Organizatori.FirstOrDefaultAsync(o => o.KorisnickoIme == korisnickoIme);
             if (organizator == null)
-                return Conflict("nepostojeci organizator");
+                throw new NonExistingOrganizatorException();
             _context.Organizatori.Remove(organizator);
             await _context.SaveChangesAsync();
             return Ok();
