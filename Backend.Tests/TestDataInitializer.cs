@@ -6,7 +6,7 @@ namespace Backend.Tests
     {
         public static void Initialize(AppDbContext context)
         {
-            // Ensure the database is cleared before seeding
+
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
             var igraci = new List<Igrac>

@@ -16,22 +16,7 @@ namespace Backend.Tests
         private AppDbContext appContext;
         private OrganizatorController organizatorController;
 
-        //[OneTimeSetUp]
-        // public void Setup()
-        // {
-        //     var options = new DbContextOptionsBuilder<AppDbContext>()
-        //        .UseInMemoryDatabase(databaseName: "TestDatabase")
-        //        .Options;
-        //     appContext = new AppDbContext(options);
-        //     var initialData = new List<Organizator>{
-        //         new Organizator{Id=1,KorisnickoIme="organizator1",Lozinka="111",Ime="Milos",Prezime="Milosevic"},
-        //         new Organizator{Id=2,KorisnickoIme="organizator2",Lozinka="222",Ime="Stefan",Prezime="Stefanovic"},
 
-        //     };
-        //     appContext.Organizatori.AddRange(initialData);
-        //     appContext.SaveChanges();
-        //     organizatorController = new OrganizatorController(appContext);
-        // }
         [SetUp]
         public void Setup()
         {
