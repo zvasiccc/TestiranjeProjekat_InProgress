@@ -14,16 +14,7 @@ namespace Backend.Tests
         [OneTimeSetUp]
         public void Setup()
         {
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDatabase")
-            .Options;
-            appContext = new AppDbContext(options);
-            var initialData = new List<Igrac>{
-                new Igrac{Id=1,KorisnickoIme="nikola1",Lozinka="111",Ime="Nikola",Prezime="Milosevic",VodjaTima=true},
-                new Igrac{Id=2,KorisnickoIme="petar2",Lozinka="222",Ime="Nemanja",Prezime="Petrovic",VodjaTima=false},
-            };
-            appContext.Igraci.AddRange(initialData);
-            appContext.SaveChanges();
+            appContext = GlobalSetup.AppContext;
             igracController = new IgracController(appContext);
         }
 
@@ -65,10 +56,6 @@ namespace Backend.Tests
             Assert.ThrowsAsync<ExistingPlayerException>(async () =>
             await igracController.RegistrujIgraca(newPlayer));
         }
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            appContext.Dispose();
-        }
+
     }
 }
