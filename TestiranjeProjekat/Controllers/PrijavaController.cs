@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
 using TestiranjeProjekat.DTOs;
+using TestiranjeProjekat.Exceptions;
 using TestiranjeProjekat.Models;
 
 namespace TestiranjeProjekat.Controllers
@@ -29,8 +30,12 @@ namespace TestiranjeProjekat.Controllers
             var igraci = await _context.Igraci
                 .Where(i => prijava.IgraciId.Contains(i.Id))
                 .ToListAsync();
-            int idTurnira = prijava.TurnirId; //ovo je 1
-            var turnir = await _context.Turniri.FindAsync(idTurnira);
+            if (igraci.Count() != prijava.IgraciId.Count())
+                throw new NonExistingPlayerException();
+            //int idTurnira = prijava.TurnirId;
+            var turnir = await _context.Turniri.FindAsync(prijava.TurnirId);
+            if (turnir == null)
+                throw new NonExistingTournamentException($"tournament with id={prijava.TurnirId} does not exists");
             turnir.TrenutniBrojTimova++;
 
             Prijava novaPrijava = new Prijava
@@ -64,15 +69,13 @@ namespace TestiranjeProjekat.Controllers
         [HttpDelete("izbaciTimSaTurnira/{prijavaId}")]
         public async Task IzbaciTimSaTurnira(int prijavaId)
         {
-            var prijava = await _context.Prijave.Where(p => p.Id == prijavaId)
-                .Include(p => p.Turnir)
-                .Include(p => p.Igraci)
-                .FirstOrDefaultAsync();
-
+            var svePrijave = await _context.Prijave.ToListAsync();
+            var nekaPrijava = await _context.Prijave.FindAsync(prijavaId);
+            var prijava = await _context.Prijave.FirstOrDefaultAsync(p => p.Id == prijavaId);
             if (prijava == null)
-                return;
-            var turnir = await _context.Turniri.FindAsync(prijava.Turnir.Id);
-            if (turnir == null) return;
+                throw new NonExistingRegistrationException($"registration with id={prijavaId} does not exists");
+            var turnir = prijava.Turnir;
+            if (turnir == null) throw new NonExistingTournamentException($"this tournament does not existis in database");
 
             turnir.TrenutniBrojTimova--;
             turnir.Prijave.Remove(prijava);

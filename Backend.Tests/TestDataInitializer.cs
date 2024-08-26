@@ -12,7 +12,7 @@ namespace Backend.Tests
             var igraci = new List<Igrac>
             {
                 new Igrac{Id=1,KorisnickoIme="nikola1",Lozinka="111",Ime="Nikola",Prezime="Milosevic",VodjaTima=true},
-                new Igrac{Id=2,KorisnickoIme="petar2",Lozinka="222",Ime="Nemanja",Prezime="Petrovic",VodjaTima=false},
+                new Igrac{Id=2,KorisnickoIme="petar2",Lozinka="222",Ime="Nemanja",Prezime="Petrovic",VodjaTima=true},
                 new Igrac{Id=3, KorisnickoIme="marko3", Lozinka="333", Ime="Marko", Prezime="Markovic", VodjaTima=true},
                 new Igrac{Id=4, KorisnickoIme="jovan4", Lozinka="444", Ime="Jovan", Prezime="Jovanovic", VodjaTima=false},
                 new Igrac{Id=5, KorisnickoIme="stefan5", Lozinka="555", Ime="Stefan", Prezime="Stefanovic", VodjaTima=true},
@@ -54,8 +54,12 @@ namespace Backend.Tests
             }
             var prijave = new List<Prijava>
             {
-                new Prijava{Id=1,NazivTima="Tim1",PotrebanBrojSlusalica=2,PotrebanBrojRacunara=2,PotrebanBrojTastatura=2,PotrebanBrojMiseva=1, Igraci = new List<PrijavaIgracSpoj>{ new PrijavaIgracSpoj{ Igrac = igraci[0] },new PrijavaIgracSpoj{Igrac=igraci[1]},new PrijavaIgracSpoj{Igrac=igraci[5]},new PrijavaIgracSpoj{Igrac=igraci[9]} }},
-                new Prijava{Id=2,NazivTima="Tim2",PotrebanBrojSlusalica=2,PotrebanBrojRacunara=3,PotrebanBrojTastatura=1,PotrebanBrojMiseva=1, Igraci = new List<PrijavaIgracSpoj>{ new PrijavaIgracSpoj{ Igrac = igraci[1] },new PrijavaIgracSpoj{Igrac=igraci[1]},new PrijavaIgracSpoj{Igrac=igraci[7]},new PrijavaIgracSpoj{Igrac=igraci[8]} }},
+                new Prijava{Id=1,NazivTima="Tim1",PotrebanBrojSlusalica=2,PotrebanBrojRacunara=2,PotrebanBrojTastatura=2,PotrebanBrojMiseva=1,Turnir=turniri[0], Igraci = new List<PrijavaIgracSpoj>{ new PrijavaIgracSpoj{ Igrac = igraci[0] },new PrijavaIgracSpoj{Igrac=igraci[1]},new PrijavaIgracSpoj{Igrac=igraci[2]} }},
+                new Prijava{Id=2,NazivTima="Tim2",PotrebanBrojSlusalica=2,PotrebanBrojRacunara=3,PotrebanBrojTastatura=1,PotrebanBrojMiseva=1,Turnir=turniri[1], Igraci = new List<PrijavaIgracSpoj>{ new PrijavaIgracSpoj{ Igrac = igraci[3] },new PrijavaIgracSpoj{Igrac=igraci[1]},new PrijavaIgracSpoj{Igrac=igraci[7]}}},
+                //za prijavu id=3 ne postoji turnir, zbog testiranja
+                new Prijava{Id=3,NazivTima="Tim3",PotrebanBrojSlusalica=2,PotrebanBrojRacunara=3,PotrebanBrojTastatura=1,PotrebanBrojMiseva=1, Igraci = new List<PrijavaIgracSpoj>{ new PrijavaIgracSpoj{ Igrac = igraci[5] },new PrijavaIgracSpoj{Igrac=igraci[6]},new PrijavaIgracSpoj{Igrac=igraci[1]}}},
+                new Prijava{Id=4,NazivTima="Tim4",PotrebanBrojSlusalica=2,PotrebanBrojRacunara=3,PotrebanBrojTastatura=1,PotrebanBrojMiseva=1,Turnir=turniri[4], Igraci = new List<PrijavaIgracSpoj>{ new PrijavaIgracSpoj{ Igrac = igraci[5] },new PrijavaIgracSpoj{Igrac=igraci[1]},new PrijavaIgracSpoj{Igrac=igraci[7]}}},
+                new Prijava{Id=5,NazivTima="Tim5",PotrebanBrojSlusalica=2,PotrebanBrojRacunara=3,PotrebanBrojTastatura=1,PotrebanBrojMiseva=1,Turnir=turniri[3], Igraci = new List<PrijavaIgracSpoj>{ new PrijavaIgracSpoj{ Igrac = igraci[7] },new PrijavaIgracSpoj{Igrac=igraci[3]},new PrijavaIgracSpoj{Igrac=igraci[7]}}},
             };
             //dodavanje prijave u listu prijava igraca
             foreach (var prijava in prijave)
@@ -71,6 +75,19 @@ namespace Backend.Tests
                         }
                         igrac.Prijave.Add(prijavaIgracSpoj);
                     }
+                }
+            }
+            //dodavanje prijave u listu prijava turnira
+            foreach (var prijava in prijave)
+            {
+                var turnir = turniri.FirstOrDefault(t => t.Id == prijava.Turnir?.Id);
+                if (turnir != null)
+                {
+                    if (turnir.Prijave == null)
+                    {
+                        turnir.Prijave = new List<Prijava>();
+                    }
+                    turnir.Prijave.Add(prijava);
                 }
             }
             context.Igraci.AddRange(igraci);
