@@ -46,6 +46,13 @@ namespace TestiranjeProjekat.Controllers
         [HttpPost("registrujIgraca")]
         public async Task RegistrujIgraca(Igrac igrac)
         {
+            if (string.IsNullOrWhiteSpace(igrac.KorisnickoIme)
+                || string.IsNullOrWhiteSpace(igrac.Lozinka)
+                || string.IsNullOrWhiteSpace(igrac.Ime)
+                || string.IsNullOrWhiteSpace(igrac.Prezime))
+            {
+                throw new EmptyFieldException();
+            }
             var postojeciIgrac = await _context.Igraci.FirstOrDefaultAsync(i => i.KorisnickoIme == igrac.KorisnickoIme);
             if (postojeciIgrac != null)
             {
@@ -59,7 +66,7 @@ namespace TestiranjeProjekat.Controllers
         public async Task<Igrac> DohvatiIgraca(string korisnickoIme)
         {
             var igrac = await _context.Igraci.FirstOrDefaultAsync(i => i.KorisnickoIme == korisnickoIme);
-            return igrac;
+            return igrac; //vraca igraca ili null
         }
         [HttpPut("izmeniPodatkeOIgracu/{igracId}")]
         //todo izmeni parametar kao na git
@@ -68,7 +75,13 @@ namespace TestiranjeProjekat.Controllers
             var stariIgrac = await _context.Igraci.FindAsync(igracId);
             if (stariIgrac == null)
             {
-                return;
+                throw new NonExistingPlayerException();
+            }
+            if (string.IsNullOrWhiteSpace(igrac.KorisnickoIme)
+         || string.IsNullOrWhiteSpace(igrac.Ime)
+         || string.IsNullOrWhiteSpace(igrac.Prezime))
+            {
+                throw new EmptyFieldException();
             }
             stariIgrac.Ime = igrac.Ime;
             stariIgrac.Prezime = igrac.Prezime;
