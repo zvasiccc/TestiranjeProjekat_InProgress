@@ -21,7 +21,6 @@ namespace Backend.Tests
         [TestCase("Tim1", 2, 3, 1, 2, new int[] { 3, 4, 5 }, 3)]
         public async Task CreateRegistration_Success(string nazivTima, int brojSlusalica, int brojRacunara, int brojTastatura, int brojMiseva, int[] igraciId, int turnirId)
         {
-            //?kad se pokrene drugi put samo ovaj test prolazi, zajedno sa svima nece
             var prijava = new PrijavaDTO
             {
                 NazivTima = nazivTima,
@@ -43,6 +42,7 @@ namespace Backend.Tests
             Assert.That(savedRegistration.PotrebanBrojTastatura, Is.EqualTo(brojTastatura), "Broj tastatura se ne poklapa.");
             Assert.That(savedRegistration.PotrebanBrojMiseva, Is.EqualTo(brojMiseva), "Broj miseva se ne poklapa.");
             Assert.That(savedRegistration.Turnir.Id, Is.EqualTo(turnirId), "Turnir ID se ne poklapa.");
+            //todo da li se u tom turniru u bazi povecao trenutni broj timova sa ono ++
             Assert.That(savedRegistration.Igraci.Count, Is.EqualTo(igraciId.Length), "Broj igraca u prijavi se ne poklapa.");
             for (int i = 0; i < igraciId.Length; i++)
             {
@@ -70,9 +70,11 @@ namespace Backend.Tests
 
         }
         [Test]
-        [TestCase("Tim1", 2, 3, 1, 2, new int[] { 999, 4, 5 }, 2)]
+        [TestCase("Tim1", 2, 3, 1, 2, new int[] { 4, 5, 999 }, 2)]
+        [TestCase("Tim1", 2, 3, 1, 2, new int[] { 4, 5, 999, 1000 }, 2)]//provera da 2 igraca ne postoje
         public async Task createRegistration_NonExistingPlayer(string nazivTima, int brojSlusalica, int brojRacunara, int brojTastatura, int brojMiseva, int[] igraciId, int turnirId)
         {
+            //todo provera da taj igrac zaista ne postoji
             var prijava = new PrijavaDTO
             {
                 NazivTima = nazivTima,
@@ -88,7 +90,9 @@ namespace Backend.Tests
                 await prijavaController.dodajPrijavu(prijava);
             });
         }
+
         //!read
+        //todo
         // [Test]
         // [TestCase(2)]
         // public async Task prijaveNaTurniru_ReturnsCorrectPrijave(int turnirId)
@@ -136,7 +140,9 @@ namespace Backend.Tests
         [TestCase(2)]
         public async Task deleteRegistration_asOrganizator_Success(int prijavaId)
         {
-            //todo iz prve ne prodje, drugi put kad se pokrene samo on hoce
+            //todo da proverim da li postoji prijava
+            //todo dodati proveru da li ce u turniru da se smanji broj prijava pre i posle 
+            //i da li je iz turnira nestala ta prijava
             var existingRegistration = await appContext.Prijave.FindAsync(prijavaId);
             var svePrijave = await appContext.Prijave.ToListAsync();
             Assert.NotNull(existingRegistration);
@@ -144,10 +150,27 @@ namespace Backend.Tests
             var nonExistingRegistration = await appContext.Prijave.FindAsync(prijavaId);
             Assert.Null(nonExistingRegistration);
         }
+
+        [Test]
+        [TestCase(99)]
+        public async Task deleteRegistration_asOrganizator_NonExistingRegistrationId(int prijavaId)
+        {
+            Assert.ThrowsAsync<NonExistingRegistrationException>(async () => await prijavaController.IzbaciTimSaTurnira(prijavaId));
+        }
+        [Test]
+        [TestCase(3)]
+        public async Task deleteRegistration_asOrganizator_NonExistingTournament(int prijavaId)
+        {
+            Assert.ThrowsAsync<NonExistingTournamentException>(async () => await prijavaController.IzbaciTimSaTurnira(prijavaId));
+        }
         [Test]
         [TestCase(1, 1)]
         public async Task deleteRegistration_asTeamLeader_Success(int tournamentId, int playerId)
         {
+            //todo da proverim da li postoji prijava
+            //todo dodati proveru da li ce u turniru da se smanji broj prijava pre i posle 
+            //i da li je iz turnira nestala ta prijava
+            //todo test kad nema turnir i kad nema taj playerid
             var svePrijave = await appContext.Prijave.ToListAsync();
             var prijava = await appContext.Prijave.FirstOrDefaultAsync(p => p.Turnir.Id == tournamentId && p.Igraci.Any(i => i.IgracId == playerId));
             var existingRegistration = await appContext.Prijave
@@ -161,23 +184,6 @@ namespace Backend.Tests
                 .Include(p => p.Turnir)
                 .FirstOrDefaultAsync(p => p.Turnir.Id == tournamentId && p.Igraci.Any(i => i.IgracId == playerId));
             Assert.Null(nonExistingRegistration);
-        }
-        [Test]
-        [TestCase(99)]
-        public async Task deleteRegistration_asOrganizator_NonExistingRegistrationId(int prijavaId)
-        {
-            Assert.ThrowsAsync<NonExistingRegistrationException>(async () => await prijavaController.IzbaciTimSaTurnira(prijavaId));
-        }
-        [Test]
-        [TestCase(3)]
-        public async Task deleteRegistration_asOrganizator_NonExistingTournament(int prijavaId)
-        {
-            Assert.ThrowsAsync<NonExistingTournamentException>(async () => await prijavaController.IzbaciTimSaTurnira(prijavaId));
-        }
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            appContext.Dispose();
         }
 
     }

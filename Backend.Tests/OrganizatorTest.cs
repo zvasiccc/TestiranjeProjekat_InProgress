@@ -17,7 +17,7 @@ namespace Backend.Tests
         private OrganizatorController organizatorController;
 
 
-        [SetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
 
@@ -25,6 +25,7 @@ namespace Backend.Tests
             organizatorController = new OrganizatorController(appContext);
         }
         //create
+        //todo sve sto vazi  za igraca vazi i ovde, iste provere i testovi da dodam
         [Test]
         [TestCase("NekiOrganizator", "123", "Jovan", "Jovanovic")]
         public async Task CreateOrganizator_SuccessfullyAddsOrganizator_ReturnSuccessMessage(string korisnickoIme, string lozinka, string ime, string prezime)

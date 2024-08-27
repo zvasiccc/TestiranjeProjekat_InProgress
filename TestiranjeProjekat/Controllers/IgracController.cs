@@ -6,8 +6,8 @@ using TestiranjeProjekat.Models;
 namespace TestiranjeProjekat.Controllers
 {
     [ApiController]
-    //Route("[controller]")]
-    [Route("/pufla")]
+    [Route("[controller]")]
+
     public class IgracController : ControllerBase
     {
         // private readonly IgracService _igracService;
@@ -86,6 +86,8 @@ namespace TestiranjeProjekat.Controllers
             stariIgrac.Ime = igrac.Ime;
             stariIgrac.Prezime = igrac.Prezime;
             stariIgrac.KorisnickoIme = igrac.KorisnickoIme;
+
+            //todo provera da vec ne postoji takvo korisnicko ime
             await _context.SaveChangesAsync();
         }
         [HttpGet("daLiJeIgracPrijavljenNaTurnir/{turnirId}/{igracId}")]

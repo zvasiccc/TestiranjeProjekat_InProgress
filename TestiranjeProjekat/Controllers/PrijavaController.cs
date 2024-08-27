@@ -26,7 +26,9 @@ namespace TestiranjeProjekat.Controllers
         [HttpPost("dodajPrijavu")]
         public async Task<Prijava> dodajPrijavu([FromBody] PrijavaDTO prijava)
         {
-
+            //todo provera da li je preskocen maks broj timova za turnir
+            //todo test za to gde je popunjena knap
+            //todo test za uspesno dodavanje kad ima jos 1 mesto
             var igraci = await _context.Igraci
                 .Where(i => prijava.IgraciId.Contains(i.Id))
                 .ToListAsync();
@@ -71,11 +73,14 @@ namespace TestiranjeProjekat.Controllers
         {
             var svePrijave = await _context.Prijave.ToListAsync();
             var nekaPrijava = await _context.Prijave.FindAsync(prijavaId);
-            var prijava = await _context.Prijave.FirstOrDefaultAsync(p => p.Id == prijavaId);
+            var prijava2 = await _context.Prijave.FirstOrDefaultAsync(p => p.Id == prijavaId);
+            var prijava = await _context.Prijave
+            .Include(p => p.Turnir)
+            .FirstOrDefaultAsync(p => p.Id == prijavaId);
             if (prijava == null)
                 throw new NonExistingRegistrationException($"registration with id={prijavaId} does not exists");
             var turnir = prijava.Turnir;
-            if (turnir == null) throw new NonExistingTournamentException($"this tournament does not existis in database");
+            if (turnir == null) throw new NonExistingTournamentException($"this tournament does not exists in database");
 
             turnir.TrenutniBrojTimova--;
             turnir.Prijave.Remove(prijava);
@@ -91,8 +96,9 @@ namespace TestiranjeProjekat.Controllers
                 .Include(p => p.Turnir)
                 .FirstOrDefaultAsync(p => p.Turnir.Id == turnirId && p.Igraci.Any(i => i.IgracId == igracId));
             var turnir = await _context.Turniri.FindAsync(turnirId);
-            if (turnir == null || prijava == null) return;
+            if (turnir == null || prijava == null) return; //todo izuzetak za turnir i za prijavu
             turnir.Prijave.Remove(prijava);
+            turnir.TrenutniBrojTimova--;
             _context.Prijave.Remove(prijava);
             await _context.SaveChangesAsync();
         }

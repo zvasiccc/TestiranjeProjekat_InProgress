@@ -31,14 +31,19 @@ namespace Backend.Tests
                 Prezime = prezime,
                 VodjaTima = vodjaTima
             };
+            //todo proveri da ne postoji vec taj igrac, pa onda radi ovo
+            //ako postoji onda bazim izuzetak u testu, nisu ispunjeni uslovi za odrzavanje testa
             await igracController.RegistrujIgraca(newPlayer);
             var addedPlayer = appContext.Igraci.FirstOrDefault(i => i.KorisnickoIme == korisnickoIme);
 
             Assert.IsNotNull(addedPlayer);
-            Assert.AreEqual(korisnickoIme, addedPlayer.KorisnickoIme);
-            Assert.AreEqual(lozinka, addedPlayer.Lozinka);
-            Assert.AreEqual(ime, addedPlayer.Ime);
-            Assert.AreEqual(prezime, addedPlayer.Prezime);
+            Assert.Multiple(() =>
+            {
+                Assert.That(addedPlayer.KorisnickoIme, Is.EqualTo(korisnickoIme));
+                Assert.That(addedPlayer.Lozinka, Is.EqualTo(lozinka));
+                Assert.That(addedPlayer.Ime, Is.EqualTo(ime));
+                Assert.That(addedPlayer.Prezime, Is.EqualTo(prezime));
+            });
         }
         [Test]
         [TestCase("nikola1", "dzontra123", "nikola", "milosevic", false)]
@@ -58,7 +63,7 @@ namespace Backend.Tests
             await igracController.RegistrujIgraca(newPlayer));
         }
         [Test]
-        [TestCase("3", "", "nikola", "milosevic", false)]
+        [TestCase("3", "nikola123", "nikola", "", false)]
         public async Task createPlayer_EmptyField_ReturnsError(string korisnickoIme, string lozinka, string ime, string prezime, bool vodjaTima)
         {
             var newPlayer = new Igrac
@@ -76,6 +81,7 @@ namespace Backend.Tests
         [TestCase("nikola1")]
         public async Task getPlayer_ReturnsSuccess(string korisnickoIme)
         {
+            //todo provera da li postoji igrac
             var result = await igracController.DohvatiIgraca(korisnickoIme);
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.TypeOf<Igrac>());
@@ -84,6 +90,7 @@ namespace Backend.Tests
         [TestCase("player123")]
         public async Task getPlayer_NonExistingPlayer(string korisnickoIme)
         {
+            //todo provera da li ne postoji igrac
             var result = await igracController.DohvatiIgraca(korisnickoIme);
             Assert.IsNull(result);
         }
@@ -103,6 +110,8 @@ namespace Backend.Tests
             Assert.AreEqual(ime, possiblyUpdatedPlyer.Ime);
             Assert.AreEqual(prezime, possiblyUpdatedPlyer.Prezime);
         }
+        //todo test za empty field, prezime najbolje
+        //todo test za update tako da korisnicko ime vec postoji u bazi 
         [Test]
         [TestCase("32", "Nemanja123", "Nemanja", "Jovanovic")]
         public async Task updatePlayerProfile_NonExistingId(int playerId, string korisnickoIme, string ime, string prezime)

@@ -20,7 +20,9 @@ public class GlobalSetup
     [OneTimeTearDown]
     public void TearDown()
     {
+
         AppContext.Dispose();
+
     }
 
 }

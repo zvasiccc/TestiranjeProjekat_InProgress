@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Backend.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 using TestiranjeProjekat.DTOs;
+using TestiranjeProjekat.Exceptions;
 using TestiranjeProjekat.Models;
 
 
@@ -20,7 +22,13 @@ namespace TestiranjeProjekat.Controllers
         [HttpGet("sviTurniri")]
         public async Task<List<Turnir>> VratiSveTurnire()
         {
-            return await _context.Turniri.ToListAsync();
+            var turniri = await _context.Turniri.ToListAsync();
+            if (turniri == null || !turniri.Any())
+            {
+                throw new EmptyTournamentListException();
+                //todo vrati praznu listu turnira i izmeni test
+            }
+            return turniri;
         }
         [HttpGet("mojiTurniri/{igracid}")]
         public async Task<List<TurnirDTO>> MojiTurniri(int igracId)
@@ -45,7 +53,11 @@ namespace TestiranjeProjekat.Controllers
         {
             var organizatorTurnira = await _context.Organizatori.FindAsync(noviTurnirDTO.OrganizatorId);
             if (organizatorTurnira == null)
-                return;
+                throw new NonExistingOrganizatorException();
+            if (string.IsNullOrWhiteSpace(noviTurnirDTO.Naziv)
+             || string.IsNullOrWhiteSpace(noviTurnirDTO.MestoOdrzavanja)
+             || string.IsNullOrWhiteSpace(noviTurnirDTO.DatumOdrzavanja))
+                throw new EmptyFieldException();
             Turnir noviTurnir = new Turnir
             {
                 Naziv = noviTurnirDTO.Naziv,
