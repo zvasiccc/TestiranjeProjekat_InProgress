@@ -1,4 +1,5 @@
 using Backend.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using TestiranjeProjekat.Controllers;
 using TestiranjeProjekat.DTOs;
 using TestiranjeProjekat.Exceptions;
@@ -84,29 +85,29 @@ namespace Backend.Tests
         {
             appContext.Turniri.RemoveRange(appContext.Turniri);
             await appContext.SaveChangesAsync();
-            Assert.ThrowsAsync<EmptyTournamentListException>(async () => await turnirController.VratiSveTurnire());
+            var result = await turnirController.VratiSveTurnire();
+            Assert.IsNull(result);
         }
         [Test]
         [TestCase]
         public async Task TaskGetAllTournaments_ReturnsCorrectTournamentDetails()
         {
-            var turniri = await turnirController.VratiSveTurnire();
-
-            var firstTournament = turniri.First();
+            var receivedTournaments = await turnirController.VratiSveTurnire();
+            var expectedTournaments = await appContext.Turniri.ToListAsync();
+            Assert.That(receivedTournaments, Is.EqualTo(expectedTournaments));
+            var firstTournament = receivedTournaments.First();
             var expectedFirstTournament = appContext.Turniri.First();
-            var lastTournament = turniri.Last();
+            var lastTournament = receivedTournaments.Last();
             var expectedLastTournament = appContext.Turniri.Last();
+            Assert.That(firstTournament, Is.EqualTo(expectedFirstTournament));
+            Assert.That(lastTournament, Is.EqualTo(expectedLastTournament));
 
-            Assert.That(firstTournament, Is.SameAs(expectedFirstTournament));
-            //todo same as kroz ceo projekat, proveri prvo da li radi
-
-            Assert.That(turniri, Is.SameAs(appContext.Turniri.ToList()));
-            Assert.That(turniri, Is.SubsetOf(appContext.Turniri));
-
-            Assert.That(firstTournament.Naziv, Is.EqualTo(expectedFirstTournament.Naziv));
-            Assert.That(firstTournament.MestoOdrzavanja, Is.EqualTo(expectedFirstTournament.MestoOdrzavanja));
-            Assert.That(lastTournament.Naziv, Is.EqualTo(expectedLastTournament.Naziv));
-            Assert.That(lastTournament.MestoOdrzavanja, Is.EqualTo(expectedLastTournament.MestoOdrzavanja));
+            //!Assert.That(turniri, Is.SameAs(appContext.Turniri.ToList()));
+            //!Assert.That(turniri, Is.SubsetOf(appContext.Turniri));
+            // Assert.That(firstTournament.Naziv, Is.EqualTo(expectedFirstTournament.Naziv));
+            // Assert.That(firstTournament.MestoOdrzavanja, Is.EqualTo(expectedFirstTournament.MestoOdrzavanja));
+            // Assert.That(lastTournament.Naziv, Is.EqualTo(expectedLastTournament.Naziv));
+            // Assert.That(lastTournament.MestoOdrzavanja, Is.EqualTo(expectedLastTournament.MestoOdrzavanja));
         }
         [Test]
         [TestCase(10)]
@@ -117,11 +118,9 @@ namespace Backend.Tests
             Assert.IsEmpty(result);
         }
         [Test]
-        [TestCase(7)]
+        [TestCase(5)]
         public async Task PlayerTournaments_ReturnsSingleTournament_WhenPlayerIsRegisteredForOneTournament(int playerId)
         {
-
-
 
             var expectedTournament = appContext.PrijavaIgracSpoj
                 .Where(pis => pis.IgracId == playerId)
@@ -140,8 +139,8 @@ namespace Backend.Tests
             // Act
             var result = await turnirController.MojiTurniri(playerId);
 
-            // Assert
-            Assert.That(result.Count, Is.EqualTo(1));
+            if (result.Count() != 1)
+                throw new Exception("player is registered for more then one tournament");
             Assert.That(result[0].Naziv, Is.EqualTo(expectedTournament.Naziv));
             Assert.That(result[0].DatumOdrzavanja, Is.EqualTo(expectedTournament.DatumOdrzavanja));
             Assert.That(result[0].MestoOdrzavanja, Is.EqualTo(expectedTournament.MestoOdrzavanja));

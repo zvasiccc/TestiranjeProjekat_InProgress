@@ -60,6 +60,7 @@ namespace Backend.Tests
                 new Prijava{Id=3,NazivTima="Tim3",PotrebanBrojSlusalica=2,PotrebanBrojRacunara=3,PotrebanBrojTastatura=1,PotrebanBrojMiseva=1, Igraci = new List<PrijavaIgracSpoj>{ new PrijavaIgracSpoj{ Igrac = igraci[5] },new PrijavaIgracSpoj{Igrac=igraci[6]},new PrijavaIgracSpoj{Igrac=igraci[1]}}},
                 new Prijava{Id=4,NazivTima="Tim4",PotrebanBrojSlusalica=2,PotrebanBrojRacunara=3,PotrebanBrojTastatura=1,PotrebanBrojMiseva=1,Turnir=turniri[4], Igraci = new List<PrijavaIgracSpoj>{ new PrijavaIgracSpoj{ Igrac = igraci[5] },new PrijavaIgracSpoj{Igrac=igraci[1]},new PrijavaIgracSpoj{Igrac=igraci[8]}}},
                 new Prijava{Id=5,NazivTima="Tim5",PotrebanBrojSlusalica=2,PotrebanBrojRacunara=3,PotrebanBrojTastatura=1,PotrebanBrojMiseva=1,Turnir=turniri[3], Igraci = new List<PrijavaIgracSpoj>{ new PrijavaIgracSpoj{ Igrac = igraci[4] },new PrijavaIgracSpoj{Igrac=igraci[3]},new PrijavaIgracSpoj{Igrac=igraci[7]}}},
+                new Prijava{Id=6,NazivTima="Tim6",PotrebanBrojSlusalica=2,PotrebanBrojRacunara=3,PotrebanBrojTastatura=1,PotrebanBrojMiseva=1,Turnir=turniri[3], Igraci = new List<PrijavaIgracSpoj>{ new PrijavaIgracSpoj{ Igrac = igraci[7] },new PrijavaIgracSpoj{Igrac=igraci[8]},new PrijavaIgracSpoj{Igrac=igraci[9]}}},
             };
             //dodavanje prijave u listu prijava igraca
             foreach (var prijava in prijave)

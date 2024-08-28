@@ -25,8 +25,7 @@ namespace TestiranjeProjekat.Controllers
             var turniri = await _context.Turniri.ToListAsync();
             if (turniri == null || !turniri.Any())
             {
-                throw new EmptyTournamentListException();
-                //todo vrati praznu listu turnira i izmeni test
+                return new List<Turnir>();
             }
             return turniri;
         }
@@ -52,6 +51,7 @@ namespace TestiranjeProjekat.Controllers
         public async Task DodajTurnir(TurnirDTO noviTurnirDTO)
         {
             var organizatorTurnira = await _context.Organizatori.FindAsync(noviTurnirDTO.OrganizatorId);
+            var sviOrganizatori = await _context.Organizatori.ToListAsync();
             if (organizatorTurnira == null)
                 throw new NonExistingOrganizatorException();
             if (string.IsNullOrWhiteSpace(noviTurnirDTO.Naziv)

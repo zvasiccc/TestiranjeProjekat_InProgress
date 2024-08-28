@@ -25,12 +25,12 @@ namespace Backend.Tests
             organizatorController = new OrganizatorController(appContext);
         }
         //create
-        //todo sve sto vazi  za igraca vazi i ovde, iste provere i testovi da dodam
         [Test]
         [TestCase("NekiOrganizator", "123", "Jovan", "Jovanovic")]
         public async Task CreateOrganizator_SuccessfullyAddsOrganizator_ReturnSuccessMessage(string korisnickoIme, string lozinka, string ime, string prezime)
         {
-            var organizatorController = new OrganizatorController(appContext);
+            var possiblyExistingOrganizator = await appContext.Organizatori.FirstOrDefaultAsync(o => o.KorisnickoIme == korisnickoIme);
+            if (possiblyExistingOrganizator != null) throw new ExistingOrganizatorException("The test conditions are not met because a organizator with that username already exists");
             var newOrganizator = new Organizator
             {
                 KorisnickoIme = korisnickoIme,
@@ -84,6 +84,8 @@ namespace Backend.Tests
         [TestCase("organizator1")]
         public async Task getOrganizator_ReturnsSuccess(string korisnickoIme)
         {
+            var possiblyExistingOrganizator = await appContext.Organizatori.FirstOrDefaultAsync(o => o.KorisnickoIme == korisnickoIme);
+            if (possiblyExistingOrganizator == null) throw new ExistingOrganizatorException("The test conditions are not met because a organizator with that username does not exist");
             var result = await organizatorController.dohvatiOrganizatora(korisnickoIme);
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.TypeOf<Organizator>());
@@ -92,8 +94,7 @@ namespace Backend.Tests
         [TestCase("nepostojeciOrganizator")]
         public async Task getOrganizator_NonExistingOrganizator(string korisnickoIme)
         {
-            var result = await organizatorController.dohvatiOrganizatora(korisnickoIme);
-            Assert.That(result, Is.Null);
+            Assert.ThrowsAsync<NonExistingOrganizatorException>(async () => await organizatorController.dohvatiOrganizatora(korisnickoIme));
         }
         //update
         [Test]
@@ -126,24 +127,33 @@ namespace Backend.Tests
             };
             Assert.ThrowsAsync<NonExistingOrganizatorException>(async () => await organizatorController.izmeniPodatkeOOrganizatoru(organizatorId, newDataOrganizator));
         }
+        [Test]
+        [TestCase("1", "Organizator1", "Petar", "")]
+        public async Task updateOrganizatorProfile_EmptyField(int organizatorId, String korisnickoIme, string ime, string prezime)
 
-        // [Test]
-        // [TestCase(1, "organizator5", " ", "Nikolic")]
-        // public async Task UpdateOrganizaor_EmptyField_ReturnsErrorMessage(int organizatorId, string korisnickoIme, string ime, string prezime)
-        // {
+        {
+            var newDataOrganizator = new OrganizatorDTO
+            {
+                KorisnickoIme = korisnickoIme,
+                Ime = ime,
+                Prezime = prezime
+            };
+            Assert.ThrowsAsync<EmptyFieldException>(async () => await organizatorController.izmeniPodatkeOOrganizatoru(organizatorId, newDataOrganizator));
+        }
+        [Test]
+        [TestCase("1", "organizator3", "Petar", "Petrovic")]
+        public async Task updateOrganizatorProfile_ExistingUsername(int organizatorId, String korisnickoIme, string ime, string prezime)
 
-        //     var newOrganizator = new OrganizatorDTO
-        //     {
-        //         KorisnickoIme = korisnickoIme,
-        //         Ime = ime,
-        //         Prezime = prezime
-        //     };
-        //     var result = await organizatorController.izmeniPodatkeOOrganizatoru(organizatorId, newOrganizator);
-        //     Assert.IsInstanceOf<ConflictObjectResult>(result);
-        //     var conflictResult = result as ConflictObjectResult;
-        //     Assert.AreEqual("uneli ste prazno polje", conflictResult.Value);
+        {
+            var newDataOrganizator = new OrganizatorDTO
+            {
+                KorisnickoIme = korisnickoIme,
+                Ime = ime,
+                Prezime = prezime
+            };
+            Assert.ThrowsAsync<ExistingOrganizatorException>(async () => await organizatorController.izmeniPodatkeOOrganizatoru(organizatorId, newDataOrganizator));
+        }
 
-        // }
         //delete
         [Test]
         [TestCase("organizator2")]

@@ -39,7 +39,7 @@ namespace TestiranjeProjekat.Controllers
         public async Task<Organizator> dohvatiOrganizatora(string korisnickoIme)
         {
 
-            var organizator = await _context.Organizatori.FirstOrDefaultAsync(o => o.KorisnickoIme == korisnickoIme);
+            var organizator = await _context.Organizatori.FirstOrDefaultAsync(o => o.KorisnickoIme == korisnickoIme) ?? throw new NonExistingOrganizatorException();
             return organizator;//vraca null ili organizatora
         }
         [HttpGet("daLiJeOrganizatorTurnira/{organizatorId}/{turnirId}")]
@@ -49,14 +49,12 @@ namespace TestiranjeProjekat.Controllers
             var organizator = _context.Turniri
                 .Where(t => t.Id == turnirId)
                 .Select(t => t.Organizator)
-                .FirstOrDefault();
+                .FirstOrDefault() ?? throw new NonExistingOrganizatorException();
             return organizator.Id == organizatorId;
         }
         [HttpPut("izmeniPodatkeOOrganizatoru/{organizatorId}")]
         //todo ubaci req
         public async Task izmeniPodatkeOOrganizatoru(int organizatorId, [FromBody] OrganizatorDTO organizator)
-
-
         {
             var postojeciOrganizator = await _context.Organizatori.FindAsync(organizatorId);
             if (postojeciOrganizator == null)
@@ -67,11 +65,12 @@ namespace TestiranjeProjekat.Controllers
             {
                 throw new EmptyFieldException();
             }
+            var existingOrganizator = await _context.Organizatori.FirstOrDefaultAsync(p => p.KorisnickoIme == organizator.KorisnickoIme);
+            if (existingOrganizator != null) throw new ExistingOrganizatorException();
             postojeciOrganizator.Ime = organizator.Ime;
             postojeciOrganizator.Prezime = organizator.Prezime;
             postojeciOrganizator.KorisnickoIme = organizator.KorisnickoIme;
             await _context.SaveChangesAsync();
-            return;
 
         }
         public async Task<ActionResult> obrisiOrganizatora(string korisnickoIme)

@@ -83,11 +83,13 @@ namespace TestiranjeProjekat.Controllers
             {
                 throw new EmptyFieldException();
             }
+            //todo provera da vec ne postoji takvo korisnicko ime
+            var existingPlayer = await _context.Igraci.FirstOrDefaultAsync(p => p.KorisnickoIme == igrac.KorisnickoIme);
+            if (existingPlayer != null) throw new ExistingPlayerException();
             stariIgrac.Ime = igrac.Ime;
             stariIgrac.Prezime = igrac.Prezime;
             stariIgrac.KorisnickoIme = igrac.KorisnickoIme;
 
-            //todo provera da vec ne postoji takvo korisnicko ime
             await _context.SaveChangesAsync();
         }
         [HttpGet("daLiJeIgracPrijavljenNaTurnir/{turnirId}/{igracId}")]

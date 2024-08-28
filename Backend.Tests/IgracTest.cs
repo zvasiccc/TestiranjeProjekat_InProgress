@@ -23,6 +23,8 @@ namespace Backend.Tests
         [TestCase("jovann", "jovan123", "Jovan", "Jovanovic", false)]
         public async Task createPlayer_Succes(string korisnickoIme, string lozinka, string ime, string prezime, bool vodjaTima)
         {
+            var possiblyExistingPlayer = await appContext.Igraci.FirstOrDefaultAsync(i => i.KorisnickoIme == korisnickoIme);
+            if (possiblyExistingPlayer != null) throw new ExistingPlayerException("The test conditions are not met because a player with that username already exists");
             var newPlayer = new Igrac
             {
                 KorisnickoIme = korisnickoIme,
@@ -31,10 +33,9 @@ namespace Backend.Tests
                 Prezime = prezime,
                 VodjaTima = vodjaTima
             };
-            //todo proveri da ne postoji vec taj igrac, pa onda radi ovo
-            //ako postoji onda bazim izuzetak u testu, nisu ispunjeni uslovi za odrzavanje testa
+
             await igracController.RegistrujIgraca(newPlayer);
-            var addedPlayer = appContext.Igraci.FirstOrDefault(i => i.KorisnickoIme == korisnickoIme);
+            var addedPlayer = await appContext.Igraci.FirstOrDefaultAsync(i => i.KorisnickoIme == korisnickoIme);
 
             Assert.IsNotNull(addedPlayer);
             Assert.Multiple(() =>
@@ -82,15 +83,20 @@ namespace Backend.Tests
         public async Task getPlayer_ReturnsSuccess(string korisnickoIme)
         {
             //todo provera da li postoji igrac
+            var possiblyExistingPlayer = appContext.Igraci.FirstOrDefaultAsync(i => i.KorisnickoIme == korisnickoIme);
+            if (possiblyExistingPlayer == null) throw new ExistingPlayerException("The test conditions are not met because a player with that username does not exist");
             var result = await igracController.DohvatiIgraca(korisnickoIme);
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.TypeOf<Igrac>());
         }
         [Test]
-        [TestCase("player123")]
-        public async Task getPlayer_NonExistingPlayer(string korisnickoIme)
+        [TestCase("player999")]
+        public async Task getPlayer_NonExistingPlayer_Success(string korisnickoIme)
         {
             //todo provera da li ne postoji igrac
+
+            var possiblyExistingPlayer = await appContext.Igraci.FirstOrDefaultAsync(i => i.KorisnickoIme == korisnickoIme);
+            if (possiblyExistingPlayer != null) throw new ExistingPlayerException("The test conditions are not met because a player with that username exists");
             var result = await igracController.DohvatiIgraca(korisnickoIme);
             Assert.IsNull(result);
         }
@@ -111,7 +117,31 @@ namespace Backend.Tests
             Assert.AreEqual(prezime, possiblyUpdatedPlyer.Prezime);
         }
         //todo test za empty field, prezime najbolje
+        [Test]
+        [TestCase("3", "petar123", "petar", "")]
+        public async Task updatePlayerProfile_EmptyField(int playerId, string korisnickoIme, string ime, string prezime)
+        {
+            var newPlayer = new IgracDTO
+            {
+                KorisnickoIme = korisnickoIme,
+                Ime = ime,
+                Prezime = prezime,
+            };
+            Assert.ThrowsAsync<EmptyFieldException>(async () => await igracController.IzmeniPodatkeOIgracu(playerId, newPlayer));
+        }
         //todo test za update tako da korisnicko ime vec postoji u bazi 
+        [Test]
+        [TestCase("4", "vladimir9", "vladimirr", "vladimirovic")]
+        public async Task updatePlayerProfile_ExistingUsername(int playerId, string korisnickoIme, string ime, string prezime)
+        {
+            var newPlayer = new IgracDTO
+            {
+                KorisnickoIme = korisnickoIme,
+                Ime = ime,
+                Prezime = prezime,
+            };
+            Assert.ThrowsAsync<ExistingPlayerException>(async () => await igracController.IzmeniPodatkeOIgracu(playerId, newPlayer));
+        }
         [Test]
         [TestCase("32", "Nemanja123", "Nemanja", "Jovanovic")]
         public async Task updatePlayerProfile_NonExistingId(int playerId, string korisnickoIme, string ime, string prezime)

@@ -21,6 +21,7 @@ namespace TestiranjeProjekat.Controllers
         public async Task<Prijava> vratiPrijavuPoId(int prijavaId)
         {
             var prijava = await _context.Prijave.FindAsync(prijavaId);
+            if (prijava == null) throw new NonExistingRegistrationException();
             return prijava;
         }
         [HttpPost("dodajPrijavu")]
@@ -71,18 +72,19 @@ namespace TestiranjeProjekat.Controllers
         [HttpDelete("izbaciTimSaTurnira/{prijavaId}")]
         public async Task IzbaciTimSaTurnira(int prijavaId)
         {
-            var svePrijave = await _context.Prijave.ToListAsync();
-            var nekaPrijava = await _context.Prijave.FindAsync(prijavaId);
-            var prijava2 = await _context.Prijave.FirstOrDefaultAsync(p => p.Id == prijavaId);
-            var prijava = await _context.Prijave
-            .Include(p => p.Turnir)
-            .FirstOrDefaultAsync(p => p.Id == prijavaId);
-            if (prijava == null)
-                throw new NonExistingRegistrationException($"registration with id={prijavaId} does not exists");
-            var turnir = prijava.Turnir;
-            if (turnir == null) throw new NonExistingTournamentException($"this tournament does not exists in database");
 
+            var prijava = await _context.Prijave.FirstOrDefaultAsync(p => p.Id == prijavaId);
+
+            if (prijava != null)
+            {
+                await _context.Entry(prijava).Reference(p => p.Turnir).LoadAsync();
+            }
+
+            if (prijava == null) throw new NonExistingRegistrationException($"registration with id={prijavaId} does not exists");
+            var turnir = prijava.Turnir ?? throw new NonExistingTournamentException($"this tournament does not exists in database");
             turnir.TrenutniBrojTimova--;
+            if (turnir.Prijave == null)
+                throw new NonExistingRegistrationException();
             turnir.Prijave.Remove(prijava);
 
             _context.Prijave.Remove(prijava);
@@ -96,7 +98,11 @@ namespace TestiranjeProjekat.Controllers
                 .Include(p => p.Turnir)
                 .FirstOrDefaultAsync(p => p.Turnir.Id == turnirId && p.Igraci.Any(i => i.IgracId == igracId));
             var turnir = await _context.Turniri.FindAsync(turnirId);
-            if (turnir == null || prijava == null) return; //todo izuzetak za turnir i za prijavu
+            if (turnir == null)
+                throw new NonExistingTournamentException();
+            if (prijava == null)
+                throw new NonExistingRegistrationException();
+            if (turnir.Prijave == null) return;
             turnir.Prijave.Remove(prijava);
             turnir.TrenutniBrojTimova--;
             _context.Prijave.Remove(prijava);
