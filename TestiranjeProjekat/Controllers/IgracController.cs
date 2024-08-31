@@ -60,7 +60,7 @@ namespace TestiranjeProjekat.Controllers
             }
             _context.Igraci.Add(igrac);
             await _context.SaveChangesAsync();
-            return;
+
         }
         [HttpGet("dohvatiIgraca/{korisnickoIme}")]
         public async Task<Igrac> DohvatiIgraca(string korisnickoIme)

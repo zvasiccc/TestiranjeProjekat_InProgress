@@ -1,7 +1,11 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, throwError } from 'rxjs';
 import { Igrac } from 'src/app/shared/models/igrac';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -9,6 +13,9 @@ import { Router } from '@angular/router';
 import * as IgracActions from 'src/app/shared/state/igrac/igrac.actions';
 import { selectSviIgraci } from 'src/app/shared/state/igrac/igrac.selector';
 import { StoreService } from '../store.service';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -20,7 +27,7 @@ export class IgracService {
     private router: Router,
     private _snackBar: MatSnackBar
   ) {}
-  private urlIgrac = 'http://localhost:3000/igrac/';
+  private urlIgrac = 'http://localhost:5101/Igrac/';
   vratiSveIgrace(): Observable<Igrac[]> {
     const trenutnoPrijavljeniKorisnik$ =
       this.storeService.pribaviTrenutnoPrijavljenogKorisnika();
@@ -44,25 +51,67 @@ export class IgracService {
     const headers = this.storeService.pribaviHeaders();
     return this.http.get<Igrac[]>(url, { headers });
   }
+  // registrujSeKaoIgrac(igrac: Igrac): Subscription {
+  //   const url = this.urlIgrac + 'registrujIgraca';
+  //   return this.http.post(url, igrac).subscribe((p) => {
+  //     if (p == null) {
+  //       this._snackBar.open(
+  //         'Zeljeno korisnicko ime je vec u upotrebi',
+  //         'Zatvori',
+  //         {
+  //           duration: 4000,
+  //         }
+  //       );
+  //     } else {
+  //       this._snackBar.open('Uspesno ste se registrovali', 'Zatvori', {
+  //         duration: 2000,
+  //       });
+  //       this.router.navigateByUrl('');
+  //     }
+  //   });
+  // }
   registrujSeKaoIgrac(igrac: Igrac): Subscription {
     const url = this.urlIgrac + 'registrujIgraca';
-    return this.http.post(url, igrac).subscribe((p) => {
-      if (p == null) {
-        this._snackBar.open(
-          'Zeljeno korisnicko ime je vec u upotrebi',
-          'Zatvori',
-          {
-            duration: 4000,
+    return this.http
+      .post(url, igrac)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          // Proveri status kod greške
+          console.log(error);
+          if (error.status == 400) {
+            // Proveri da li je status kod 400 Bad Request
+            this._snackBar.open('Morate popuniti sva polja.', 'Zatvori', {
+              duration: 4000,
+            });
+          } else if (error.status == 409) {
+            // Proveri da li je status kod 409 Conflict
+            this._snackBar.open(
+              'Zeljeno korisnicko ime je vec u upotrebi.',
+              'Zatvori',
+              {
+                duration: 4000,
+              }
+            );
+          } else {
+            this._snackBar.open(
+              'Došlo je do greške. Pokušajte ponovo.',
+              'Zatvori',
+              {
+                duration: 4000,
+              }
+            );
           }
-        );
-      } else {
+          return throwError(error);
+        })
+      )
+      .subscribe(() => {
         this._snackBar.open('Uspesno ste se registrovali', 'Zatvori', {
           duration: 2000,
         });
         this.router.navigateByUrl('');
-      }
-    });
+      });
   }
+
   vidiSaigrace(turnirId: number, igracId: number): Observable<Igrac[]> {
     const headers = this.storeService.pribaviHeaders();
     const url = this.urlIgrac + `vratiIgraceIzIstogTima/${turnirId}/${igracId}`;

@@ -1,14 +1,15 @@
 namespace TestiranjeProjekat.Exceptions
 {
-    public class NonExistingOrganizatorException : Exception
+    public class NonExistingIdException : Exception
     {
-        public NonExistingOrganizatorException() : base("This ID don't exists")
+        public int StatusCode { get; }
+        public NonExistingIdException() : base("This ID don't exists")
         {
-
+            StatusCode = StatusCodes.Status404NotFound;
         }
-        public NonExistingOrganizatorException(string msg) : base(msg)
+        public NonExistingIdException(string msg) : base(msg)
         {
-
+            StatusCode = StatusCodes.Status404NotFound;
         }
     }
 }

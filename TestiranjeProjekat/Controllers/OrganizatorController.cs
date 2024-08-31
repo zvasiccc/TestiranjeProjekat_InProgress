@@ -73,6 +73,7 @@ namespace TestiranjeProjekat.Controllers
             await _context.SaveChangesAsync();
 
         }
+        [HttpDelete]
         public async Task<ActionResult> obrisiOrganizatora(string korisnickoIme)
         {
             if (string.IsNullOrWhiteSpace(korisnickoIme))

@@ -1,13 +1,13 @@
 namespace TestiranjeProjekat.Exceptions
 {
-    public class NonExistingTournamentException : Exception
+    public class NonExistingPlayerException : Exception
     {
         public int StatusCode { get; }
-        public NonExistingTournamentException() : base("non existing tournament")
+        public NonExistingPlayerException() : base("This player does not exist")
         {
             StatusCode = StatusCodes.Status404NotFound;
         }
-        public NonExistingTournamentException(string msg) : base(msg)
+        public NonExistingPlayerException(string msg) : base(msg)
         {
             StatusCode = StatusCodes.Status404NotFound;
         }
