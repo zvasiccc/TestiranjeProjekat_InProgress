@@ -13,7 +13,7 @@ public class TokenObject
 public class User
 {
     public string username { get; set; }
-    public int sub { get; set; }
+    public int id { get; set; }
     public string role { get; set; }
 
 }
@@ -56,7 +56,7 @@ public class AuthController : ControllerBase
             o.accessToken = token;
             User u = new User();
             u.username = player.KorisnickoIme;
-            u.sub = player.Id;
+            u.id = player.Id;
             u.role = "igrac";
             o.korisnik = u;
             return o;
@@ -68,7 +68,7 @@ public class AuthController : ControllerBase
             o.accessToken = token;
             User u = new User();
             u.username = organizator.KorisnickoIme;
-            u.sub = organizator.Id;
+            u.id = organizator.Id;
             u.role = "organizator";
             o.korisnik = u;
             return o;

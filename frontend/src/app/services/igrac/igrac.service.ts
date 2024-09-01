@@ -13,20 +13,29 @@ import { Router } from '@angular/router';
 import * as IgracActions from 'src/app/shared/state/igrac/igrac.actions';
 import { selectSviIgraci } from 'src/app/shared/state/igrac/igrac.selector';
 import { StoreService } from '../store.service';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Organizator } from 'src/app/shared/models/organizator';
 
 @Injectable({
   providedIn: 'root',
 })
 export class IgracService {
+  idKorisnika: number | undefined;
+  trenutnoPrijavljeniKorisnik$: Observable<Igrac | Organizator | undefined> =
+    this.storeService.pribaviTrenutnoPrijavljenogKorisnika();
+
   constructor(
     private store: Store,
     private http: HttpClient,
     private storeService: StoreService,
     private router: Router,
     private _snackBar: MatSnackBar
-  ) {}
+  ) {
+    this.trenutnoPrijavljeniKorisnik$.subscribe((korisnik) => {
+      this.idKorisnika = korisnik?.id as number;
+    });
+  }
   private urlIgrac = 'http://localhost:5101/Igrac/';
   vratiSveIgrace(): Observable<Igrac[]> {
     const trenutnoPrijavljeniKorisnik$ =
@@ -120,7 +129,7 @@ export class IgracService {
 
   izmeniPodatkeOIgracu(igrac: Igrac): Observable<Igrac> {
     const headers = this.storeService.pribaviHeaders();
-    const url = this.urlIgrac + 'izmeniPodatkeOIgracu';
+    const url = this.urlIgrac + `izmeniPodatkeOIgracu/${this.idKorisnika}`;
     return this.http.put<Igrac>(url, igrac, { headers });
   }
 
