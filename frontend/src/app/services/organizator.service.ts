@@ -17,7 +17,7 @@ export class OrganizatorService {
     private storeService: StoreService,
     private router: Router
   ) {}
-  organizatorUrl: string = 'http://localhost:3000/organizator/';
+  organizatorUrl: string = 'http://localhost:5101/organizator/';
   registrujSeKaoOrganizator(organizator: Organizator) {
     const url = this.organizatorUrl + 'registrujOrganizatora';
 

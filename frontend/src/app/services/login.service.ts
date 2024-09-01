@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 export class LoginService {
   constructor(private http: HttpClient) {}
   posaljiZahtevZaLogin(korisnickoIme: string, lozinka: string) {
-    const url = 'http://localhost:3000/auth/login';
+    const url = 'http://localhost:5101/auth/login';
     const obj = { username: korisnickoIme, password: lozinka };
     return this.http.post(url, obj); //vraca token i korisnika
   }

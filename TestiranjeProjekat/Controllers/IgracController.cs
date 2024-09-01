@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TestiranjeProjekat.DTOs;
 using TestiranjeProjekat.Exceptions;
@@ -10,11 +11,11 @@ namespace TestiranjeProjekat.Controllers
 
     public class IgracController : ControllerBase
     {
-        // private readonly IgracService _igracService;
+
         private readonly AppDbContext _context;
         public IgracController(AppDbContext context)
         {
-            //_igracService = igracService;
+
             _context = context;
         }
         [HttpGet("vratiMoguceSaigrace/{igracId}")]
@@ -62,6 +63,7 @@ namespace TestiranjeProjekat.Controllers
             await _context.SaveChangesAsync();
 
         }
+        [Authorize]
         [HttpGet("dohvatiIgraca/{korisnickoIme}")]
         public async Task<Igrac> DohvatiIgraca(string korisnickoIme)
         {

@@ -18,7 +18,7 @@ export class PrijavaService {
     private storeService: StoreService,
     private _snackBar: MatSnackBar
   ) {}
-  prijavaUrl = 'http://localhost:3000/prijava/';
+  prijavaUrl = 'http://localhost:5101/prijava/';
   posaljiPrijavuUBazu(prijava: Prijava) {
     const headers = this.storeService.pribaviHeaders();
 

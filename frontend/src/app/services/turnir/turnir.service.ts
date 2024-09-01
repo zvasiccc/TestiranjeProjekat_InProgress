@@ -23,7 +23,7 @@ export class TurnirService {
     private http: HttpClient,
     private storeService: StoreService
   ) {}
-  private turnirUrl = 'http://localhost:3000/turnir/';
+  private turnirUrl = 'http://localhost:5101/turnir/';
 
   private refreshSubject = new BehaviorSubject<Turnir[]>([]);
 
@@ -35,6 +35,8 @@ export class TurnirService {
     return this.refreshSubject.pipe(
       exhaustMap(() => {
         const headers = this.storeService.pribaviHeaders();
+        console.log('headers su');
+        console.log(headers);
         const url = this.turnirUrl + 'mojiTurniri';
         return this.http.get<Turnir[]>(url, { headers });
       })
