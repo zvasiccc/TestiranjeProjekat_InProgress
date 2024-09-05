@@ -1,3 +1,4 @@
+using Backend.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using TestiranjeProjekat.Exceptions;
@@ -8,13 +9,6 @@ public class ExceptionFilter : IExceptionFilter
     {
         var result = context.Exception switch
         {
-            ExistingPlayerException existingPlayerException => new ObjectResult(new
-            {
-                message = existingPlayerException.Message
-            })
-            {
-                StatusCode = existingPlayerException.StatusCode
-            },
             EmptyFieldException emptyFieldException => new ObjectResult(new
             {
                 message = emptyFieldException.Message
@@ -22,12 +16,69 @@ public class ExceptionFilter : IExceptionFilter
             {
                 StatusCode = emptyFieldException.StatusCode
             },
+            EmptyTournamentListException emptyTournamentListException => new ObjectResult(new
+            {
+                message = emptyTournamentListException.Message
+            })
+            {
+                StatusCode = emptyTournamentListException.StatusCode
+            },
+            ExistingOrganizatorException existingOrganizatorException => new ObjectResult(new
+            {
+                message = existingOrganizatorException.Message
+            })
+            {
+                StatusCode = existingOrganizatorException.StatusCode
+            },
+            ExistingPlayerException existingPlayerException => new ObjectResult(new
+            {
+                message = existingPlayerException.Message
+            })
+            {
+                StatusCode = existingPlayerException.StatusCode
+            },
+            ExistingTournamentException existingTournamentException => new ObjectResult(new
+            {
+                message = existingTournamentException.Message
+            })
+            {
+                StatusCode = existingTournamentException.StatusCode
+            },
+
             NonExistingIdException nonExistingIdException => new ObjectResult(new
             {
                 message = nonExistingIdException.Message
             })
             {
                 StatusCode = nonExistingIdException.StatusCode
+            },
+            NonExistingOrganizatorException nonExistingOrganizatorException => new ObjectResult(new
+            {
+                message = nonExistingOrganizatorException.Message
+            })
+            {
+                StatusCode = nonExistingOrganizatorException.StatusCode
+            },
+            NonExistingPlayerException nonExistingPlayerException => new ObjectResult(new
+            {
+                message = nonExistingPlayerException.Message
+            })
+            {
+                StatusCode = nonExistingPlayerException.StatusCode
+            },
+            NonExistingRegistrationException nonExistingRegistrationException => new ObjectResult(new
+            {
+                message = nonExistingRegistrationException.Message
+            })
+            {
+                StatusCode = nonExistingRegistrationException.StatusCode
+            },
+            NonExistingTournamentException nonExistingTournamentException => new ObjectResult(new
+            {
+                message = nonExistingTournamentException.Message
+            })
+            {
+                StatusCode = nonExistingTournamentException.StatusCode
             },
             _ => new ObjectResult(new
             {

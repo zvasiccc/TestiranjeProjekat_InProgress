@@ -6,6 +6,7 @@ import {
   Observable,
   catchError,
   exhaustMap,
+  map,
   of,
   tap,
 } from 'rxjs';
@@ -29,16 +30,20 @@ export class TurnirService {
 
   getTurniriBaza(): Observable<Turnir[]> {
     const url = this.turnirUrl + 'sviTurniri';
-    return this.http.get<Turnir[]>(url);
+    return this.http
+      .get<any>(url)
+      .pipe(map((response) => response.$values || []));
   }
-  getMojiTurniri(): Observable<Turnir[]> {
+  getMojiTurniri(idKorisnika: number): Observable<Turnir[]> {
     return this.refreshSubject.pipe(
       exhaustMap(() => {
         const headers = this.storeService.pribaviHeaders();
         console.log('headers su');
         console.log(headers);
-        const url = this.turnirUrl + 'mojiTurniri';
-        return this.http.get<Turnir[]>(url, { headers });
+        const url = this.turnirUrl + `mojiTurniri/${idKorisnika}`;
+        return this.http
+          .get<any>(url, { headers })
+          .pipe(map((response) => response.$values || []));
       })
     );
   }
@@ -74,7 +79,8 @@ export class TurnirService {
     if (pretragaKrajnjaNagrada !== undefined && pretragaKrajnjaNagrada !== 0)
       url += `&pretragaKrajnjaNagrada=${pretragaKrajnjaNagrada}`;
 
-    return this.http.get<Turnir[]>(url).pipe(
+    return this.http.get<any>(url).pipe(
+      map((response) => response.$values || []),
       tap((turniri) => {
         this.store.dispatch(TurnirActions.fetchTurniriUspesno({ turniri }));
       }),

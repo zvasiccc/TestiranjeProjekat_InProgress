@@ -15,6 +15,7 @@ public class User
     public string username { get; set; }
     public int id { get; set; }
     public string role { get; set; }
+    public bool vodjaTima { get; set; }
 
 }
 
@@ -58,6 +59,12 @@ public class AuthController : ControllerBase
             u.username = player.KorisnickoIme;
             u.id = player.Id;
             u.role = "igrac";
+            if (player.VodjaTima == true)
+                u.vodjaTima = true;
+            else
+            {
+                u.vodjaTima = false;
+            }
             o.korisnik = u;
             return o;
         }

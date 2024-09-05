@@ -2,6 +2,7 @@
 {
     public class PrijavaDTO
     {
+        public int Id { get; set; }
         public string NazivTima { get; set; }
         public int PotrebanBrojSlusalica { get; set; }
         public int PotrebanBrojRacunara { get; set; }

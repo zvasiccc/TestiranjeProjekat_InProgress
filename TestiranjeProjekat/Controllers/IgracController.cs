@@ -26,6 +26,7 @@ namespace TestiranjeProjekat.Controllers
                 .Where(i => i.Id != igracId)
                 .Select(i => new IgracDTO
                 {
+                    Id = i.Id,
                     KorisnickoIme = i.KorisnickoIme,
                     Ime = i.Ime,
                     Prezime = i.Prezime,
@@ -95,13 +96,14 @@ namespace TestiranjeProjekat.Controllers
             await _context.SaveChangesAsync();
         }
         [HttpGet("daLiJeIgracPrijavljenNaTurnir/{turnirId}/{igracId}")]
-        public async Task<Prijava> DaLiJeIgracPrijavljenNaTurnir(int turnirId, int igracId)
+        public async Task<bool> DaLiJeIgracPrijavljenNaTurnir(int turnirId, int igracId)
         {
-            var trazenaPrijava = _context.Prijave
+            var trazenaPrijava = await _context.Prijave
                 .Include(p => p.Igraci)
                 .Include(p => p.Turnir)
-                .FirstOrDefault(p => p.Turnir.Id == turnirId && p.Igraci.Any(i => i.Id == igracId));
-            return trazenaPrijava;
+                .FirstOrDefaultAsync(p => p.Turnir.Id == turnirId && p.Igraci.Any(i => i.Id == igracId));
+            if (trazenaPrijava != null) return true;
+            return false;
             //todo aleksa, ima 2 idija, i ispituje pogresan 
         }
         [HttpGet("vratiIgraceIzIstogTima/{turnirId}/{igracId}")]

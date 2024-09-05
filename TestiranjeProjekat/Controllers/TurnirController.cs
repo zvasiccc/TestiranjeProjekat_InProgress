@@ -32,8 +32,9 @@ namespace TestiranjeProjekat.Controllers
         [HttpGet("mojiTurniri/{igracid}")]
         public async Task<List<TurnirDTO>> MojiTurniri(int igracId)
         {
+
             var turniri = await _context.PrijavaIgracSpoj
-                .Where(pis => pis.IgracId == igracId)
+                .Where(pis => pis.IgracId == igracId) 
                 .Select(pis => new TurnirDTO
                 {
                     Naziv = pis.Prijava.Turnir.Naziv,

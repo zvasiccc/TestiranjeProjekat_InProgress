@@ -16,8 +16,11 @@ import { Turnir } from '../shared/models/turnir';
 export class MojiTurniriComponent {
   trenutnoPrijavljeniKorisnik$: Observable<Igrac | Organizator | undefined> =
     this.storeService.pribaviTrenutnoPrijavljenogKorisnika();
+  idKorisnika: number = this.storeService.pribaviIdPrijavljenogKorisnika();
 
-  mojiTurniri$: Observable<Turnir[]> = this.turnirService.getMojiTurniri();
+  mojiTurniri$: Observable<Turnir[]> = this.turnirService.getMojiTurniri(
+    this.idKorisnika
+  );
   constructor(
     private turnirService: TurnirService,
     private storeService: StoreService,

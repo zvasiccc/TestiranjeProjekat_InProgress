@@ -27,9 +27,7 @@ namespace TestiranjeProjekat.Controllers
         [HttpPost("dodajPrijavu")]
         public async Task<Prijava> dodajPrijavu([FromBody] PrijavaDTO prijava)
         {
-            //todo provera da li je preskocen maks broj timova za turnir
-            //todo test za to gde je popunjena knap
-            //todo test za uspesno dodavanje kad ima jos 1 mesto
+            //frontend salje celu prijavu sa svim igracima i ne slazu se objekti
             var igraci = await _context.Igraci
                 .Where(i => prijava.IgraciId.Contains(i.Id))
                 .ToListAsync();

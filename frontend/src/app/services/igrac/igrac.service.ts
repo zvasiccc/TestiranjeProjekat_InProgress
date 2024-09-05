@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
 import * as IgracActions from 'src/app/shared/state/igrac/igrac.actions';
 import { selectSviIgraci } from 'src/app/shared/state/igrac/igrac.selector';
 import { StoreService } from '../store.service';
-import { catchError, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Organizator } from 'src/app/shared/models/organizator';
 
@@ -44,9 +44,12 @@ export class IgracService {
     trenutnoPrijavljeniKorisnik$.subscribe((korisnik) => {
       idKorisnika = korisnik?.id as number;
     });
-    const url: string = this.urlIgrac + `vratiMoguceSaigrace`;
+    const url: string =
+      this.urlIgrac + `vratiMoguceSaigrace/${this.idKorisnika}`;
     const headers: HttpHeaders = this.storeService.pribaviHeaders();
-    return this.http.get<Igrac[]>(url, { headers });
+    return this.http
+      .get<any>(url, { headers })
+      .pipe(map((response) => response.$values || []));
   }
 
   dodajIgracaUTim(igrac: Igrac): void {

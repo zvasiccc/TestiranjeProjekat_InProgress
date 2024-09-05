@@ -1,9 +1,13 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Igrac } from '../shared/models/igrac';
 import { Organizator } from '../shared/models/organizator';
-import { Observable } from 'rxjs';
+import { catchError, Observable, Subscription, throwError } from 'rxjs';
 import { StoreService } from './store.service';
 import { Router } from '@angular/router';
 
@@ -11,19 +15,54 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class OrganizatorService {
+  private _snackBar: any;
   constructor(
     private store: Store,
     private http: HttpClient,
     private storeService: StoreService,
     private router: Router
   ) {}
-  organizatorUrl: string = 'http://localhost:5101/organizator/';
-  registrujSeKaoOrganizator(organizator: Organizator) {
+  organizatorUrl: string = 'http://localhost:5101/Organizator/';
+  registrujSeKaoOrganizator(organizator: Organizator): Subscription {
     const url = this.organizatorUrl + 'registrujOrganizatora';
-
-    return this.http.post(url, organizator).subscribe(() => {
-      this.router.navigateByUrl('');
-    });
+    return this.http
+      .post(url, organizator)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          // Proveri status kod greške
+          console.log(error);
+          if (error.status == 400) {
+            // Proveri da li je status kod 400 Bad Request
+            this._snackBar.open('Morate popuniti sva polja.', 'Zatvori', {
+              duration: 4000,
+            });
+          } else if (error.status == 409) {
+            // Proveri da li je status kod 409 Conflict
+            this._snackBar.open(
+              'Zeljeno korisnicko ime je vec u upotrebi.',
+              'Zatvori',
+              {
+                duration: 4000,
+              }
+            );
+          } else {
+            this._snackBar.open(
+              'Došlo je do greške. Pokušajte ponovo.',
+              'Zatvori',
+              {
+                duration: 4000,
+              }
+            );
+          }
+          return throwError(error);
+        })
+      )
+      .subscribe(() => {
+        this._snackBar.open('Uspesno ste se registrovali', 'Zatvori', {
+          duration: 2000,
+        });
+        this.router.navigateByUrl('');
+      });
   }
   daLiJeOrganizatorTurnira(
     korisnikId: number | undefined | null,
