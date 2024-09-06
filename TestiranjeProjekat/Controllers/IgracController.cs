@@ -69,12 +69,13 @@ namespace TestiranjeProjekat.Controllers
         public async Task<Igrac> DohvatiIgraca(string korisnickoIme)
         {
             var igrac = await _context.Igraci.FirstOrDefaultAsync(i => i.KorisnickoIme == korisnickoIme);
-            return igrac; //vraca igraca ili null
+            return igrac; //vraca igraca ili null 
         }
         [HttpPut("izmeniPodatkeOIgracu/{igracId}")]
         //todo izmeni parametar kao na git
         public async Task IzmeniPodatkeOIgracu(int igracId, [FromBody] IgracDTO igrac)
         {
+
             var stariIgrac = await _context.Igraci.FindAsync(igracId);
             if (stariIgrac == null)
             {
@@ -87,7 +88,8 @@ namespace TestiranjeProjekat.Controllers
                 throw new EmptyFieldException();
             }
             //todo provera da vec ne postoji takvo korisnicko ime
-            var existingPlayer = await _context.Igraci.FirstOrDefaultAsync(p => p.KorisnickoIme == igrac.KorisnickoIme);
+            var existingPlayer = await _context.Igraci.Where(p => p.KorisnickoIme == igrac.KorisnickoIme && p.Id != igracId).FirstOrDefaultAsync();
+
             if (existingPlayer != null) throw new ExistingPlayerException();
             stariIgrac.Ime = igrac.Ime;
             stariIgrac.Prezime = igrac.Prezime;

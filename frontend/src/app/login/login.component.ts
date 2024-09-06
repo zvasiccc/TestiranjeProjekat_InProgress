@@ -46,7 +46,10 @@ export class LoginComponent {
       )
       .subscribe(async (token: any) => {
         jwtToken = token.access_token;
-        let korisnik: Igrac | Organizator | undefined = token.korisnik;
+        let korisnik: Igrac | Organizator | undefined = {
+          ...token.korisnik,
+          $id: undefined,
+        };
 
         if (korisnik) {
           this.prijavljeniKorisnik =

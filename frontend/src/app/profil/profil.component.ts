@@ -42,6 +42,7 @@ export class ProfilComponent {
     this.uredjivanjeOmoguceno = true;
   }
   promeniPodatke() {
+
     const izmenjeniKorisnik: any = {
       korisnickoIme: this.korisnickoIme,
       ime: this.ime,

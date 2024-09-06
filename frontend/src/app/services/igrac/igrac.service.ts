@@ -49,7 +49,12 @@ export class IgracService {
     const headers: HttpHeaders = this.storeService.pribaviHeaders();
     return this.http
       .get<any>(url, { headers })
-      .pipe(map((response) => response.$values || []));
+      .pipe(
+        map(
+          (response) =>
+            response.$values.map((p: any) => ({ ...p, $id: undefined })) || []
+        )
+      );
   }
 
   dodajIgracaUTim(igrac: Igrac): void {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Any;
 using System.Collections.Generic;
 
 using TestiranjeProjekat.DTOs;
@@ -25,21 +26,23 @@ namespace TestiranjeProjekat.Controllers
             return prijava;
         }
         [HttpPost("dodajPrijavu")]
-        public async Task<Prijava> dodajPrijavu([FromBody] PrijavaDTO prijava)
+        public async Task<Prijava> dodajPrijavu([FromBody] PrijavaDTO2 prijava)
         {
-            //frontend salje celu prijavu sa svim igracima i ne slazu se objekti
-            var igraci = await _context.Igraci
-                .Where(i => prijava.IgraciId.Contains(i.Id))
-                .ToListAsync();
-            if (igraci.Count() != prijava.IgraciId.Count())
-                throw new NonExistingPlayerException();
-            //int idTurnira = prijava.TurnirId;
-            var turnir = await _context.Turniri.FindAsync(prijava.TurnirId);
-            if (turnir == null)
-                throw new NonExistingTournamentException($"tournament with id={prijava.TurnirId} does not exists");
-            turnir.TrenutniBrojTimova++;
 
-            Prijava novaPrijava = new Prijava
+            //todo provera da neki od igraca nije prijavbljen na taj turnir
+            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!");
+            Console.WriteLine(prijava);
+            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!");
+            if (prijava.Igraci.Count == 0)
+            {
+                throw new NonExistingPlayerException();
+            }
+            var turnir = await _context.Turniri.FirstOrDefaultAsync(p => p.Id == prijava.Turnir.Id);
+            //igraci mozda ne vidi
+            if (turnir == null)
+                throw new NonExistingTournamentException($"tournament does not exists");
+            turnir.TrenutniBrojTimova++;
+            var novaPrijava = new Prijava
             {
                 NazivTima = prijava.NazivTima,
                 PotrebanBrojSlusalica = prijava.PotrebanBrojSlusalica,
@@ -47,16 +50,60 @@ namespace TestiranjeProjekat.Controllers
                 PotrebanBrojTastatura = prijava.PotrebanBrojTastatura,
                 PotrebanBrojMiseva = prijava.PotrebanBrojMiseva,
                 Turnir = turnir
+                //                Igraci = prijava.Igraci.Select(p => _//context.PrijavaIgracSpoj.FirstOrDefault(q => q.IgracId == p.Id && q.PrijavaId == prijava.Id)).ToList()
+
             };
-            novaPrijava.Igraci = new List<PrijavaIgracSpoj>();
-            foreach (var igrac in igraci)
-            {
-                novaPrijava.Igraci.Add(new PrijavaIgracSpoj { Igrac = igrac });
-            }
             await _context.Prijave.AddAsync(novaPrijava);
+            await _context.SaveChangesAsync();
+            novaPrijava.Igraci = prijava.Igraci.Select(p =>
+            {
+                var igrac = _context.Igraci.FirstOrDefault(q => q.Id == p.Id);
+                var x = new PrijavaIgracSpoj
+                {
+                    Prijava = novaPrijava,
+                    PrijavaId = novaPrijava.Id,
+                    Igrac = igrac!,
+                    IgracId = igrac!.Id
+                };
+                return x;
+            }).ToList();
+            _context.Prijave.Update(novaPrijava);
             await _context.SaveChangesAsync();
             return novaPrijava;
         }
+        // public async Task<Prijava> dodajPrijavu([FromBody] PrijavaDTO prijava)
+        // {
+        //     //frontend salje celu prijavu sa svim igracima i ne slazu se objekti
+        //     var igraci = await _context.Igraci
+        //         .Where(i => prijava.IgraciId.Contains(i.Id))
+        //         .ToListAsync();
+        //     if (igraci.Count() != prijava.IgraciId.Count())
+        //         throw new NonExistingPlayerException();
+        //     //int idTurnira = prijava.TurnirId;
+        //     var turnir = await _context.Turniri.FindAsync(prijava.TurnirId);
+        //     if (turnir == null)
+        //         throw new NonExistingTournamentException($"tournament with id={prijava.TurnirId} does not exists");
+        //     turnir.TrenutniBrojTimova++;
+
+        //     Prijava novaPrijava = new Prijava
+        //     {
+        //         NazivTima = prijava.NazivTima,
+        //         PotrebanBrojSlusalica = prijava.PotrebanBrojSlusalica,
+        //         PotrebanBrojRacunara = prijava.PotrebanBrojRacunara,
+        //         PotrebanBrojTastatura = prijava.PotrebanBrojTastatura,
+        //         PotrebanBrojMiseva = prijava.PotrebanBrojMiseva,
+        //         Turnir = turnir
+        //     };
+        //     novaPrijava.Igraci = new List<PrijavaIgracSpoj>();
+        //     foreach (var igrac in igraci)
+        //     {
+        //         novaPrijava.Igraci.Add(new PrijavaIgracSpoj { Igrac = igrac });
+        //     }
+        //     await _context.Prijave.AddAsync(novaPrijava);
+        //     await _context.SaveChangesAsync();
+        //     return novaPrijava;
+        // }
+
         [HttpGet("prijaveNaTurniru/{turnirId}")]
         public async Task<List<Prijava>> prijaveNaTurniru(int turnirId)
         {

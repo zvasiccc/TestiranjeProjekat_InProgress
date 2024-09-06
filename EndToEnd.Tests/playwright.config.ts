@@ -1,6 +1,20 @@
-import { defineConfig } from "@playwright/test";
+import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
+  projects: [
+    {
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
+    },
+    {
+      name: "Google Chrome",
+      use: { ...devices["Desktop Chrome"] },
+    },
+  ],
   testDir: "./tests", // direktorijum gde ce se nalaziti testovi
   timeout: 30000, // timeout za svaki test
   use: {

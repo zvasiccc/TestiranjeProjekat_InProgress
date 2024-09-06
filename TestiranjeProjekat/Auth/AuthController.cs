@@ -12,8 +12,10 @@ public class TokenObject
 }
 public class User
 {
-    public string username { get; set; }
     public int id { get; set; }
+    public string korisnickoIme { get; set; }
+    public string ime { get; set; }
+    public string prezime { get; set; }
     public string role { get; set; }
     public bool vodjaTima { get; set; }
 
@@ -56,15 +58,12 @@ public class AuthController : ControllerBase
             TokenObject o = new TokenObject();
             o.accessToken = token;
             User u = new User();
-            u.username = player.KorisnickoIme;
             u.id = player.Id;
+            u.korisnickoIme = player.KorisnickoIme;
+            u.ime = player.Ime;
+            u.prezime = player.Prezime;
+            u.vodjaTima = player.VodjaTima;
             u.role = "igrac";
-            if (player.VodjaTima == true)
-                u.vodjaTima = true;
-            else
-            {
-                u.vodjaTima = false;
-            }
             o.korisnik = u;
             return o;
         }
@@ -74,8 +73,10 @@ public class AuthController : ControllerBase
             TokenObject o = new TokenObject();
             o.accessToken = token;
             User u = new User();
-            u.username = organizator.KorisnickoIme;
             u.id = organizator.Id;
+            u.korisnickoIme = organizator.KorisnickoIme;
+            u.ime = organizator.Ime;
+            u.prezime = organizator.Prezime;
             u.role = "organizator";
             o.korisnik = u;
             return o;
