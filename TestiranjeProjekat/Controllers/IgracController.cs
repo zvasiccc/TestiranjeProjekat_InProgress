@@ -116,7 +116,7 @@ namespace TestiranjeProjekat.Controllers
             var saigraci = await _context.PrijavaIgracSpoj
                  .Where(pis => pis.IgracId == igracId && pis.Prijava.Turnir.Id == turnirId)
                  .SelectMany(pis => pis.Prijava.Igraci)
-                 .Where(prijava => igracId != igracId)
+                 .Where(prijava => prijava.IgracId != igracId)
                  .Select(i => new IgracDTO
                  {
                      KorisnickoIme = i.Igrac.KorisnickoIme,

@@ -132,7 +132,9 @@ export class IgracService {
   vidiSaigrace(turnirId: number, igracId: number): Observable<Igrac[]> {
     const headers = this.storeService.pribaviHeaders();
     const url = this.urlIgrac + `vratiIgraceIzIstogTima/${turnirId}/${igracId}`;
-    return this.http.get<Igrac[]>(url, { headers });
+    return this.http
+      .get<any>(url, { headers })
+      .pipe(map((response) => response.$values || []));
   }
 
   izmeniPodatkeOIgracu(igrac: Igrac): Observable<Igrac> {

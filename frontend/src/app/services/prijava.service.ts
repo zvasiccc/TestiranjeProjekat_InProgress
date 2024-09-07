@@ -23,7 +23,7 @@ export class PrijavaService {
     const headers = this.storeService.pribaviHeaders();
 
     const url = this.prijavaUrl + 'dodajPrijavu';
-    console.log("op");
+    console.log('op');
     console.log(prijava);
     return this.http.post(url, prijava, { headers }).subscribe((p: any) => {
       if (p.porukaGreske == undefined) {
@@ -43,6 +43,7 @@ export class PrijavaService {
   vratiPrijaveZaTurnir(turnirId: number): Observable<Prijava[]> {
     const headers = this.storeService.pribaviHeaders();
     const url = this.prijavaUrl + `prijaveNaTurniru/${turnirId}`;
+    //todo los json dobija, treba da se i igraci mapiraju na values
     return this.http
       .get<any>(url, { headers })
       .pipe(map((response) => response.$values || []));

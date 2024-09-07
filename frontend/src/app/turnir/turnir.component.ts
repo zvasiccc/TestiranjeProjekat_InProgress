@@ -52,6 +52,9 @@ export class TurnirComponent {
   }
   prijaviSeNaTurnir(turnir: Turnir, korisnik: Igrac | Organizator) {
     const igrac: Igrac = korisnik as Igrac;
+    console.log('iz prijavi se na turnir je turnir:');
+    console.log(turnir);
+    console.log('_____________________');
     this.store.dispatch(
       TurnirActions.setIzabraniTurnir({ turnirId: turnir.id })
     );
@@ -65,7 +68,12 @@ export class TurnirComponent {
       .subscribe(() => alert('uspesno ste odjavili turnir'));
   }
   async prikaziPrijavljeneTimove(turnirId: number) {
-    this.router.navigateByUrl(`prijavljeniTimovi/${turnirId}`);
+    console.log('iz turnir comp, turnir id je' + turnirId);
+    console.log(this.turnir);
+    //todo gde se namesta ovaj turnir
+    console.log(' samo id je' + this.turnir.id);
+    console.log('gggggggggggg');
+    this.router.navigateByUrl(`prijavljeniTimovi/${this.turnir.id}`);
   }
 
   async vidiSaigrace(turnirId: number, igracId: number) {

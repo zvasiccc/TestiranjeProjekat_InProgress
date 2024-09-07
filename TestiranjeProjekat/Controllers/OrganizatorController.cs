@@ -43,9 +43,12 @@ namespace TestiranjeProjekat.Controllers
             return organizator;//vraca null ili organizatora
         }
         [HttpGet("daLiJeOrganizatorTurnira/{organizatorId}/{turnirId}")]
-        //todo zasto nece async?
+
         public async Task<bool> daLiJeOrganizatorTurnira(int organizatorId, int turnirId)
         {
+            var turnir = await _context.Turniri.FindAsync(turnirId);
+            if (turnir == null) throw new NonExistingTournamentException();
+            //todo test za ovo iznad
             var organizator = _context.Turniri
                 .Where(t => t.Id == turnirId)
                 .Select(t => t.Organizator)
@@ -65,7 +68,7 @@ namespace TestiranjeProjekat.Controllers
             {
                 throw new EmptyFieldException();
             }
-            var existingOrganizator = await _context.Organizatori.FirstOrDefaultAsync(p => p.KorisnickoIme == organizator.KorisnickoIme);
+            var existingOrganizator = await _context.Organizatori.FirstOrDefaultAsync(p => p.KorisnickoIme == organizator.KorisnickoIme && p.Id != organizator.Id);
             if (existingOrganizator != null) throw new ExistingOrganizatorException();
             postojeciOrganizator.Ime = organizator.Ime;
             postojeciOrganizator.Prezime = organizator.Prezime;

@@ -51,6 +51,10 @@ public class AuthController : ControllerBase
         var organizator = player == null
             ? await _context.Organizatori.FirstOrDefaultAsync(o => o.KorisnickoIme == user.Username && o.Lozinka == user.Password)
             : null;
+        if (player == null && organizator == null)
+        {
+            throw new Exception();
+        }
         if (player != null)
         {
             var token = GenerateJwtToken(user.Username, player.Id.ToString(), "igrac");

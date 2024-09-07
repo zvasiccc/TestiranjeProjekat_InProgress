@@ -30,6 +30,7 @@ export class ProfilComponent {
   uredjivanjeOmoguceno: boolean = false;
   unesenaLozinka: string = '';
   IzmenjeniKorisnik!: Igrac | Organizator;
+  idKorisnika: number = this.storeService.pribaviIdPrijavljenogKorisnika();
 
   constructor(
     private igracService: IgracService,
@@ -42,8 +43,8 @@ export class ProfilComponent {
     this.uredjivanjeOmoguceno = true;
   }
   promeniPodatke() {
-
     const izmenjeniKorisnik: any = {
+      id: this.idKorisnika,
       korisnickoIme: this.korisnickoIme,
       ime: this.ime,
       prezime: this.prezime,

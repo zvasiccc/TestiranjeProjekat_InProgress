@@ -32,11 +32,15 @@ export class KreiranjeTurniraComponent {
         });
       });
     } else {
-      this._snackBar.open('Neodgovarajuci broj timova na turniru', 'Zatvori', {
-        duration: 3000,
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-      });
+      this._snackBar.open(
+        'maksimalni broj timova mora biti stepen dvojke',
+        'Zatvori',
+        {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        }
+      );
     }
     this.turnir = {
       id: 0,

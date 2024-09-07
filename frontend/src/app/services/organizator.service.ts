@@ -15,14 +15,22 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class OrganizatorService {
+  organizatorUrl: string = 'http://localhost:5101/Organizator/';
+  idKorisnika: number | undefined;
+  trenutnoPrijavljeniKorisnik$: Observable<Igrac | Organizator | undefined> =
+    this.storeService.pribaviTrenutnoPrijavljenogKorisnika();
   private _snackBar: any;
   constructor(
     private store: Store,
     private http: HttpClient,
     private storeService: StoreService,
     private router: Router
-  ) {}
-  organizatorUrl: string = 'http://localhost:5101/Organizator/';
+  ) {
+    this.trenutnoPrijavljeniKorisnik$.subscribe((korisnik) => {
+      this.idKorisnika = korisnik?.id as number;
+    });
+  }
+
   registrujSeKaoOrganizator(organizator: Organizator): Subscription {
     const url = this.organizatorUrl + 'registrujOrganizatora';
     return this.http
@@ -78,7 +86,9 @@ export class OrganizatorService {
     organizator: Organizator
   ): Observable<Organizator> {
     const headers = this.storeService.pribaviHeaders();
-    const url = this.organizatorUrl + 'izmeniPodatkeOOrganizatoru';
+    const url =
+      this.organizatorUrl + `izmeniPodatkeOOrganizatoru/${this.idKorisnika}`;
+    console.log(organizator);
     return this.http.put<Organizator>(url, organizator, { headers });
   }
 }

@@ -29,10 +29,9 @@ namespace TestiranjeProjekat.Controllers
         public async Task<Prijava> dodajPrijavu([FromBody] PrijavaDTO2 prijava)
         {
 
-            //todo provera da neki od igraca nije prijavbljen na taj turnir
-            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!");
-            Console.WriteLine(prijava);
-            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!");
+            //todo provera da neki od igraca nije prijavbljen na taj turnir i test
+            //todo provera da li je igrac vodja 
+            //todo provera za prekoracen broj ekipa na turniru i test
             if (prijava.Igraci.Count == 0)
             {
                 throw new NonExistingPlayerException();
@@ -50,7 +49,7 @@ namespace TestiranjeProjekat.Controllers
                 PotrebanBrojTastatura = prijava.PotrebanBrojTastatura,
                 PotrebanBrojMiseva = prijava.PotrebanBrojMiseva,
                 Turnir = turnir
-                //                Igraci = prijava.Igraci.Select(p => _//context.PrijavaIgracSpoj.FirstOrDefault(q => q.IgracId == p.Id && q.PrijavaId == prijava.Id)).ToList()
+                //Igraci = prijava.Igraci.Select(p => _//context.PrijavaIgracSpoj.FirstOrDefault(q => q.IgracId == p.Id && q.PrijavaId == prijava.Id)).ToList()
 
             };
             await _context.Prijave.AddAsync(novaPrijava);
@@ -105,15 +104,44 @@ namespace TestiranjeProjekat.Controllers
         // }
 
         [HttpGet("prijaveNaTurniru/{turnirId}")]
-        public async Task<List<Prijava>> prijaveNaTurniru(int turnirId)
+        public async Task<List<PrijavaDTO2>> prijaveNaTurniru(int turnirId)
         {
-            var prijave = await _context.Prijave
+            var prijaveDTO = await _context.Prijave
                 .Where(p => p.Turnir.Id == turnirId)
-                .Include(p => p.Turnir)
-                .Include(p => p.Igraci)
+                .Select(p => new PrijavaDTO2
+                {
+                    Id = p.Id,
+                    NazivTima = p.NazivTima,
+                    PotrebanBrojMiseva = p.PotrebanBrojMiseva,
+                    PotrebanBrojRacunara = p.PotrebanBrojRacunara,
+                    PotrebanBrojSlusalica = p.PotrebanBrojSlusalica,
+                    PotrebanBrojTastatura = p.PotrebanBrojTastatura,
+                    Igraci = p.Igraci.Select(i => new IgracDTO
+                    {
+                        Id = i.Igrac.Id,
+                        KorisnickoIme = i.Igrac.KorisnickoIme,
+                        Ime = i.Igrac.Ime,
+                        Prezime = i.Igrac.Prezime,
+                        VodjaTima = i.Igrac.VodjaTima
+
+                    }).ToList(),
+                    Turnir = new TurnirDTO
+                    {
+                        Id = p.Turnir.Id,
+                        Naziv = p.Turnir.Naziv,
+                        DatumOdrzavanja = p.Turnir.DatumOdrzavanja,
+                        MestoOdrzavanja = p.Turnir.MestoOdrzavanja,
+                        MaxBrojTimova = p.Turnir.MaxBrojTimova,
+                        TrenutniBrojTimova = p.Turnir.TrenutniBrojTimova,
+                        Nagrada = p.Turnir.Nagrada
+                    }
+                })
                 .ToListAsync();
-            return prijave;
+
+            return prijaveDTO;
         }
+
+
         [HttpDelete("izbaciTimSaTurnira/{prijavaId}")]
         public async Task IzbaciTimSaTurnira(int prijavaId)
         {
