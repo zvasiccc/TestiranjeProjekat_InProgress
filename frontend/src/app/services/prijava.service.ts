@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Store } from '@ngrx/store';
-import { map, Observable } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 import { Prijava } from '../shared/models/prijava';
 import * as IgracActions from '../shared/state/igrac/igrac.actions';
 import * as PrijavaActions from '../shared/state/prijava/prijava.actions';
@@ -43,10 +43,10 @@ export class PrijavaService {
   vratiPrijaveZaTurnir(turnirId: number): Observable<Prijava[]> {
     const headers = this.storeService.pribaviHeaders();
     const url = this.prijavaUrl + `prijaveNaTurniru/${turnirId}`;
-    //todo los json dobija, treba da se i igraci mapiraju na values
-    return this.http
-      .get<any>(url, { headers })
-      .pipe(map((response) => response.$values || []));
+    return this.http.get<any>(url, { headers }).pipe(
+      map((response) => response.$values || []),
+      tap((p: any) => p.forEach((q: any) => (q.igraci = q.igraci.$values)))
+    );
   }
   izbaciTimSaTurnira(prijavaId: number): Observable<any> {
     const url = this.prijavaUrl + `izbaciTimSaTurnira/${prijavaId}`;
