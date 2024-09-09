@@ -44,7 +44,13 @@ public class ExceptionFilter : IExceptionFilter
             {
                 StatusCode = existingTournamentException.StatusCode
             },
-
+            FullTournamentCapacityException fullTournamentCapacityException => new ObjectResult(new
+            {
+                message = fullTournamentCapacityException.Message
+            })
+            {
+                StatusCode = fullTournamentCapacityException.StatusCode
+            },
             NonExistingIdException nonExistingIdException => new ObjectResult(new
             {
                 message = nonExistingIdException.Message
@@ -72,6 +78,13 @@ public class ExceptionFilter : IExceptionFilter
             })
             {
                 StatusCode = nonExistingRegistrationException.StatusCode
+            },
+            NonExistingTeamLeaderException nonExistingTeamLeaderException => new ObjectResult(new
+            {
+                message = nonExistingTeamLeaderException.Message
+            })
+            {
+                StatusCode = nonExistingTeamLeaderException.StatusCode
             },
             NonExistingTournamentException nonExistingTournamentException => new ObjectResult(new
             {

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestiranjeProjekat", "Testi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backend.Tests", "Backend.Tests\Backend.Tests.csproj", "{2F24A8BE-4E0F-4211-9247-E24898F15D0A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaywrightTests", "PlaywrightTests\PlaywrightTests.csproj", "{1CDB0A61-8435-4935-ACC6-03FA735572A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2F24A8BE-4E0F-4211-9247-E24898F15D0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F24A8BE-4E0F-4211-9247-E24898F15D0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F24A8BE-4E0F-4211-9247-E24898F15D0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CDB0A61-8435-4935-ACC6-03FA735572A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CDB0A61-8435-4935-ACC6-03FA735572A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CDB0A61-8435-4935-ACC6-03FA735572A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CDB0A61-8435-4935-ACC6-03FA735572A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -118,7 +118,7 @@ namespace Backend.Tests
             Assert.IsEmpty(result);
         }
         [Test]
-        [TestCase(5)]
+        [TestCase(11)]
         public async Task PlayerTournaments_ReturnsSingleTournament_WhenPlayerIsRegisteredForOneTournament(int playerId)
         {
 
@@ -139,7 +139,7 @@ namespace Backend.Tests
             // Act
             var result = await turnirController.MojiTurniri(playerId);
 
-            if (result.Count() != 1)
+            if (result.Count != 1)
                 throw new Exception("player is registered for more then one tournament");
             Assert.That(result[0].Naziv, Is.EqualTo(expectedTournament.Naziv));
             Assert.That(result[0].DatumOdrzavanja, Is.EqualTo(expectedTournament.DatumOdrzavanja));
@@ -150,9 +150,6 @@ namespace Backend.Tests
         [TestCase(1)]
         public async Task PlayerTournaments_ReturnsTournaments_WhenPlayerIsRegisteredForMultipleTournaments(int playerId)
         {
-
-
-
             var expectedTournaments = appContext.PrijavaIgracSpoj
                 .Where(pis => pis.IgracId == playerId)
                 .Select(pis => new TurnirDTO

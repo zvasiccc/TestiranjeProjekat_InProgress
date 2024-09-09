@@ -29,18 +29,32 @@ namespace TestiranjeProjekat.Controllers
         public async Task<Prijava> dodajPrijavu([FromBody] PrijavaDTO2 prijava)
         {
 
-            //todo provera da neki od igraca nije prijavbljen na taj turnir i test
-            //todo provera da li je igrac vodja 
+
+            //todo provera da neki od igraca nije prijavbljen na taj turnir i test, ompf
             //todo provera za prekoracen broj ekipa na turniru i test
-            if (prijava.Igraci.Count == 0)
+            if (prijava.Igraci == null)
             {
                 throw new NonExistingPlayerException();
             }
+
+            foreach (var igracDto in prijava.Igraci)
+            {
+                var igrac = await _context.Igraci.FirstOrDefaultAsync(i => i.Id == igracDto.Id);
+
+                if (igrac == null)
+                {
+                    Console.WriteLine("opa" + igrac.Id);
+                    throw new NonExistingPlayerException($"Igrac sa ID= {igracDto.Id} ne postoji u bazi");
+                }
+            }
+
+
+            var vodja = prijava.Igraci.FirstOrDefault(p => p.VodjaTima == true);
+            if (vodja == null) throw new NonExistingTeamLeaderException();
             var turnir = await _context.Turniri.FirstOrDefaultAsync(p => p.Id == prijava.Turnir.Id);
-            //igraci mozda ne vidi
             if (turnir == null)
                 throw new NonExistingTournamentException($"tournament does not exists");
-            turnir.TrenutniBrojTimova++;
+
             var novaPrijava = new Prijava
             {
                 NazivTima = prijava.NazivTima,
@@ -52,6 +66,9 @@ namespace TestiranjeProjekat.Controllers
                 //Igraci = prijava.Igraci.Select(p => _//context.PrijavaIgracSpoj.FirstOrDefault(q => q.IgracId == p.Id && q.PrijavaId == prijava.Id)).ToList()
 
             };
+            if (turnir.TrenutniBrojTimova + 1 > turnir.MaxBrojTimova)
+                throw new FullTournamentCapacityException();
+            turnir.TrenutniBrojTimova++;
             await _context.Prijave.AddAsync(novaPrijava);
             await _context.SaveChangesAsync();
             novaPrijava.Igraci = prijava.Igraci.Select(p =>
@@ -66,6 +83,7 @@ namespace TestiranjeProjekat.Controllers
                 };
                 return x;
             }).ToList();
+
             _context.Prijave.Update(novaPrijava);
             await _context.SaveChangesAsync();
             return novaPrijava;

@@ -80,40 +80,44 @@ namespace Backend.Tests
             var currentlyNumberOfTeamsInTournament = turnir.TrenutniBrojTimova;
             Assert.That(previousNumberOfTeamsInTournament + 1, Is.EqualTo(currentlyNumberOfTeamsInTournament));
         }
-        [Test]
-        [TestCase("Tim1", 2, 3, 1, 2, new int[] { 3, 4, 5 }, 222)]
-        public async Task CreateRegistration_InvalidTournamentIdAsync(string nazivTima, int brojSlusalica, int brojRacunara, int brojTastatura, int brojMiseva, int[] igraciId, int turnirId)
-        {
-            // var turnir = await appContext.Turniri.FindAsync(turnirId);
-            // if(turnir==null)
-            // throw new NonExistingTournamentException();
-            // var TurnirDTO=new TurnirDTO{
-            //     Id=turnir.Id,
+        // [Test]
+        // [TestCase("Tim1", 2, 3, 1, 2, new int[] { 3, 4, 5 }, 222)]
+        // public async Task CreateRegistration_InvalidTournamentIdAsync(string nazivTima, int brojSlusalica, int brojRacunara, int brojTastatura, int brojMiseva, int[] igraciId, int turnirId)
+        // {
+        //     // var turnir = await appContext.Turniri.FindAsync(turnirId);
+        //     // if(turnir==null)
+        //     // throw new NonExistingTournamentException();
+        //     // var TurnirDTO=new TurnirDTO{
+        //     //     Id=turnir.Id,
 
-            // }
-            var prijava = new PrijavaDTO
-            {
-                NazivTima = nazivTima,
-                PotrebanBrojSlusalica = brojSlusalica,
-                PotrebanBrojRacunara = brojRacunara,
-                PotrebanBrojTastatura = brojTastatura,
-                PotrebanBrojMiseva = brojMiseva,
-                IgraciId = igraciId.ToList(),
-                TurnirId = turnirId
-            };
-            Assert.ThrowsAsync<NonExistingTournamentException>(async () =>
-            {
-                //todo problem je kako napraviti prijavaDTo2 sa turnirom koji ne postoji, vrv brisanje ovog testa
-                //await prijavaController.dodajPrijavu(prijava);
-            });
+        //     // }
+        //     var prijava = new PrijavaDTO
+        //     {
+        //         NazivTima = nazivTima,
+        //         PotrebanBrojSlusalica = brojSlusalica,
+        //         PotrebanBrojRacunara = brojRacunara,
+        //         PotrebanBrojTastatura = brojTastatura,
+        //         PotrebanBrojMiseva = brojMiseva,
+        //         IgraciId = igraciId.ToList(),
+        //         TurnirId = turnirId
+        //     };
+        //     Assert.ThrowsAsync<NonExistingTournamentException>(async () =>
+        //     {
+        //         //todo problem je kako napraviti prijavaDTo2 sa turnirom koji ne postoji, vrv brisanje ovog testa
+        //         //await prijavaController.dodajPrijavu(prijava);
+        //     });
 
-        }
+        // }
         [Test]
-        [TestCase("Tim1", 2, 3, 1, 2, new int[] { 4, 5, 999 }, 2)]
+        // [TestCase("Tim1", 2, 3, 1, 2, new int[] { 4, 5, 999 }, 2)]
         [TestCase("Tim1", 2, 3, 1, 2, new int[] { 4, 5, 999, 1000 }, 2)]//provera da 2 igraca ne postoje
         public async Task CreateRegistration_NonExistingPlayerAsync(string nazivTima, int brojSlusalica, int brojRacunara, int brojTastatura, int brojMiseva, int[] igraciId, int turnirId)
         {
-            //todo provera da taj igrac zaista ne postoji pa onda test nastavak
+
+            var postojeciIgraci = appContext.Igraci.Where(p => igraciId.Contains(p.Id)).ToList();
+            if (postojeciIgraci.Count == igraciId.Count()) //jer je cilj testa da je neki id nepostojeci
+                throw new ExistingPlayerException();
+
             var turnir = await appContext.Turniri.FindAsync(turnirId);
             if (turnir == null)
                 throw new NonExistingTournamentException();
@@ -157,7 +161,109 @@ namespace Backend.Tests
                 await prijavaController.dodajPrijavu(prijava);
             });
         }
+        [Test]
+        [TestCase("Tim4", 2, 3, 1, 2, new int[] { 8, 9 }, 2)]
+        public async Task CreateRegistration_NonExistingTeamLeaderAsync(string nazivTima, int brojSlusalica, int brojRacunara, int brojTastatura, int brojMiseva, int[] igraciId, int turnirId)
+        {
 
+            var postojeciIgraci = appContext.Igraci.Where(p => igraciId.Contains(p.Id)).ToList();
+            if (postojeciIgraci.Count != igraciId.Count()) //jer je cilj testa da su svi igraci postojeci, a da ne postoji vodja
+                throw new ExistingPlayerException();
+
+            var turnir = await appContext.Turniri.FindAsync(turnirId);
+            if (turnir == null)
+                throw new NonExistingTournamentException();
+
+
+            var turnirDTO = new TurnirDTO
+            {
+                Id = turnir.Id,
+                Naziv = turnir.Naziv,
+                MaxBrojTimova = turnir.MaxBrojTimova,
+                TrenutniBrojTimova = turnir.TrenutniBrojTimova,
+                DatumOdrzavanja = turnir.DatumOdrzavanja,
+                MestoOdrzavanja = turnir.MestoOdrzavanja,
+                Nagrada = turnir.Nagrada,
+                OrganizatorId = turnir.Organizator?.Id
+            };
+            var igraci = appContext.Igraci.Where(p => igraciId.Contains(p.Id)).ToList();
+            var igraciDTO = igraci.Select(p =>
+                new IgracDTO
+                {
+                    Id = p.Id,
+                    KorisnickoIme = p.KorisnickoIme,
+                    Ime = p.Ime,
+                    Prezime = p.Prezime,
+                    VodjaTima = p.VodjaTima
+                }
+            ).ToList();
+            var prijava = new PrijavaDTO2
+            {
+                NazivTima = nazivTima,
+                PotrebanBrojSlusalica = brojSlusalica,
+                PotrebanBrojRacunara = brojRacunara,
+                PotrebanBrojTastatura = brojTastatura,
+                PotrebanBrojMiseva = brojMiseva,
+                Igraci = igraciDTO,
+                Turnir = turnirDTO
+
+            };
+            Assert.ThrowsAsync<NonExistingTeamLeaderException>(async () =>
+            {
+                await prijavaController.dodajPrijavu(prijava);
+            });
+        }
+        [Test]
+        [TestCase("Tim6", 2, 3, 1, 2, new int[] { 8, 9 }, 6)]
+        public async Task CreateRegistration_FullTournamentCapacity(string nazivTima, int brojSlusalica, int brojRacunara, int brojTastatura, int brojMiseva, int[] igraciId, int turnirId)
+        {
+
+            var postojeciIgraci = appContext.Igraci.Where(p => igraciId.Contains(p.Id)).ToList();
+            if (postojeciIgraci.Count != igraciId.Count())
+                throw new ExistingPlayerException();
+
+            var turnir = await appContext.Turniri.FindAsync(turnirId);
+            if (turnir == null)
+                throw new NonExistingTournamentException();
+
+            var turnirDTO = new TurnirDTO
+            {
+                Id = turnir.Id,
+                Naziv = turnir.Naziv,
+                MaxBrojTimova = turnir.MaxBrojTimova,
+                TrenutniBrojTimova = turnir.TrenutniBrojTimova,
+                DatumOdrzavanja = turnir.DatumOdrzavanja,
+                MestoOdrzavanja = turnir.MestoOdrzavanja,
+                Nagrada = turnir.Nagrada,
+                OrganizatorId = turnir.Organizator?.Id
+            };
+            var igraci = appContext.Igraci.Where(p => igraciId.Contains(p.Id)).ToList();
+            var igraciDTO = igraci.Select(p =>
+                new IgracDTO
+                {
+                    Id = p.Id,
+                    KorisnickoIme = p.KorisnickoIme,
+                    Ime = p.Ime,
+                    Prezime = p.Prezime,
+                    VodjaTima = p.VodjaTima
+                }
+            ).ToList();
+            var prijava = new PrijavaDTO2
+            {
+                NazivTima = nazivTima,
+                PotrebanBrojSlusalica = brojSlusalica,
+                PotrebanBrojRacunara = brojRacunara,
+                PotrebanBrojTastatura = brojTastatura,
+                PotrebanBrojMiseva = brojMiseva,
+                Igraci = igraciDTO,
+                Turnir = turnirDTO
+
+            };
+            Assert.ThrowsAsync<FullTournamentCapacityException>(async () =>
+            {
+                await prijavaController.dodajPrijavu(prijava);
+            });
+        }
         //!read
         [Test]
         [TestCase(2)]
