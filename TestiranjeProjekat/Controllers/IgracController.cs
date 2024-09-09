@@ -103,10 +103,11 @@ namespace TestiranjeProjekat.Controllers
             var trazenaPrijava = await _context.Prijave
                 .Include(p => p.Igraci)
                 .Include(p => p.Turnir)
-                .FirstOrDefaultAsync(p => p.Turnir.Id == turnirId && p.Igraci.Any(i => i.Id == igracId));
+                .Where(p => p.Turnir.Id == turnirId && p.Igraci.Any(i => i.Igrac.Id == igracId)).FirstOrDefaultAsync();
+
             if (trazenaPrijava != null) return true;
             return false;
-            //todo aleksa, ima 2 idija, i ispituje pogresan 
+
         }
         [HttpGet("vratiIgraceIzIstogTima/{turnirId}/{igracId}")]
         //todo lose radi

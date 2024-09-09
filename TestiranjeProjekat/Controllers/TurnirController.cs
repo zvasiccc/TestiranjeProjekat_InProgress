@@ -34,9 +34,10 @@ namespace TestiranjeProjekat.Controllers
         {
 
             var turniri = await _context.PrijavaIgracSpoj
-                .Where(pis => pis.IgracId == igracId) 
+                .Where(pis => pis.IgracId == igracId)
                 .Select(pis => new TurnirDTO
                 {
+                    Id = pis.Prijava.Turnir.Id,
                     Naziv = pis.Prijava.Turnir.Naziv,
                     DatumOdrzavanja = pis.Prijava.Turnir.DatumOdrzavanja,
                     MestoOdrzavanja = pis.Prijava.Turnir.MestoOdrzavanja,
