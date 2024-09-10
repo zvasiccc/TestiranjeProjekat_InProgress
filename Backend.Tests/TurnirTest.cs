@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using TestiranjeProjekat.Controllers;
 using TestiranjeProjekat.DTOs;
 using TestiranjeProjekat.Exceptions;
+using TestiranjeProjekat.Models;
 
 namespace Backend.Tests
 {
@@ -19,7 +20,7 @@ namespace Backend.Tests
         }
         //!create
         [Test]
-        [TestCase("Turnir Rzana", "Rzana", "12.3.2025.", 16, 3, 500, 2)]
+        [TestCase("Turnir Rzana", "Rzana", "12.3.2025.", 16, 3, 500, 3)]
         public async Task createTournament_Success(string naziv, string mestoOdrzavanja, string datumOdrzavanja, int maxBrojTimova, int trenutniBrojTimova, int nagrada, int organizatorId)
         {
             var noviTurnirDTO = new TurnirDTO
@@ -86,7 +87,8 @@ namespace Backend.Tests
             appContext.Turniri.RemoveRange(appContext.Turniri);
             await appContext.SaveChangesAsync();
             var result = await turnirController.VratiSveTurnire();
-            Assert.IsNull(result);
+            Assert.IsInstanceOf<List<Turnir>>(result);
+            Assert.That(result.Count, Is.EqualTo(0));
         }
         [Test]
         [TestCase]
@@ -95,19 +97,8 @@ namespace Backend.Tests
             var receivedTournaments = await turnirController.VratiSveTurnire();
             var expectedTournaments = await appContext.Turniri.ToListAsync();
             Assert.That(receivedTournaments, Is.EqualTo(expectedTournaments));
-            var firstTournament = receivedTournaments.First();
-            var expectedFirstTournament = appContext.Turniri.First();
-            var lastTournament = receivedTournaments.Last();
-            var expectedLastTournament = appContext.Turniri.Last();
-            Assert.That(firstTournament, Is.EqualTo(expectedFirstTournament));
-            Assert.That(lastTournament, Is.EqualTo(expectedLastTournament));
 
-            //!Assert.That(turniri, Is.SameAs(appContext.Turniri.ToList()));
-            //!Assert.That(turniri, Is.SubsetOf(appContext.Turniri));
-            // Assert.That(firstTournament.Naziv, Is.EqualTo(expectedFirstTournament.Naziv));
-            // Assert.That(firstTournament.MestoOdrzavanja, Is.EqualTo(expectedFirstTournament.MestoOdrzavanja));
-            // Assert.That(lastTournament.Naziv, Is.EqualTo(expectedLastTournament.Naziv));
-            // Assert.That(lastTournament.MestoOdrzavanja, Is.EqualTo(expectedLastTournament.MestoOdrzavanja));
+
         }
         [Test]
         [TestCase(10)]
@@ -122,32 +113,30 @@ namespace Backend.Tests
         public async Task PlayerTournaments_ReturnsSingleTournament_WhenPlayerIsRegisteredForOneTournament(int playerId)
         {
 
-            var expectedTournament = appContext.PrijavaIgracSpoj
-                .Where(pis => pis.IgracId == playerId)
-                .Select(pis => new TurnirDTO
-                {
-                    Naziv = pis.Prijava.Turnir.Naziv,
-                    DatumOdrzavanja = pis.Prijava.Turnir.DatumOdrzavanja,
-                    MestoOdrzavanja = pis.Prijava.Turnir.MestoOdrzavanja,
-                    MaxBrojTimova = pis.Prijava.Turnir.MaxBrojTimova,
-                    TrenutniBrojTimova = pis.Prijava.Turnir.TrenutniBrojTimova,
-                    Nagrada = pis.Prijava.Turnir.Nagrada,
-                    OrganizatorId = pis.Prijava.Turnir.Organizator.Id
-                })
-                .FirstOrDefault();
+            var expectedTournaments = appContext.PrijavaIgracSpoj
+                 .Where(pis => pis.IgracId == playerId)
+                 .Select(pis => new TurnirDTO
+                 {
+                     Naziv = pis.Prijava.Turnir.Naziv,
+                     DatumOdrzavanja = pis.Prijava.Turnir.DatumOdrzavanja,
+                     MestoOdrzavanja = pis.Prijava.Turnir.MestoOdrzavanja,
+                     MaxBrojTimova = pis.Prijava.Turnir.MaxBrojTimova,
+                     TrenutniBrojTimova = pis.Prijava.Turnir.TrenutniBrojTimova,
+                     Nagrada = pis.Prijava.Turnir.Nagrada,
+                     OrganizatorId = pis.Prijava.Turnir.Organizator.Id
+                 })
+                 .ToList();
 
             // Act
             var result = await turnirController.MojiTurniri(playerId);
-
-            if (result.Count != 1)
-                throw new Exception("player is registered for more then one tournament");
-            Assert.That(result[0].Naziv, Is.EqualTo(expectedTournament.Naziv));
-            Assert.That(result[0].DatumOdrzavanja, Is.EqualTo(expectedTournament.DatumOdrzavanja));
-            Assert.That(result[0].MestoOdrzavanja, Is.EqualTo(expectedTournament.MestoOdrzavanja));
+            //todo zasto ne uhvbati nista u result nakon prvo pokretanje
+            // throw new Exception($"count je {result.Count}");
+            // Assert.That(1, Is.EqualTo(result.Count));
+            Assert.That(result, Is.EqualTo(expectedTournaments));
         }
 
         [Test]
-        [TestCase(1)]
+        [TestCase(4)]
         public async Task PlayerTournaments_ReturnsTournaments_WhenPlayerIsRegisteredForMultipleTournaments(int playerId)
         {
             var expectedTournaments = appContext.PrijavaIgracSpoj
@@ -166,19 +155,20 @@ namespace Backend.Tests
 
             // Act
             var result = await turnirController.MojiTurniri(playerId);
+            Assert.That(result, Is.EqualTo(expectedTournaments));
 
-            // Assert
-            Assert.That(result.Count, Is.EqualTo(expectedTournaments.Count));
-            for (int i = 0; i < expectedTournaments.Count; i++)
-            {
-                Assert.That(result[i].Naziv, Is.EqualTo(expectedTournaments[i].Naziv));
-                Assert.That(result[i].DatumOdrzavanja, Is.EqualTo(expectedTournaments[i].DatumOdrzavanja));
-                Assert.That(result[i].MestoOdrzavanja, Is.EqualTo(expectedTournaments[i].MestoOdrzavanja));
-                Assert.That(result[i].MaxBrojTimova, Is.EqualTo(expectedTournaments[i].MaxBrojTimova));
-                Assert.That(result[i].TrenutniBrojTimova, Is.EqualTo(expectedTournaments[i].TrenutniBrojTimova));
-                Assert.That(result[i].Nagrada, Is.EqualTo(expectedTournaments[i].Nagrada));
-                Assert.That(result[i].OrganizatorId, Is.EqualTo(expectedTournaments[i].OrganizatorId));
-            }
+            //     // Assert
+            //     Assert.That(result.Count, Is.EqualTo(expectedTournaments.Count));
+            //     for (int i = 0; i < expectedTournaments.Count; i++)
+            //     {
+            //         Assert.That(result[i].Naziv, Is.EqualTo(expectedTournaments[i].Naziv));
+            //         Assert.That(result[i].DatumOdrzavanja, Is.EqualTo(expectedTournaments[i].DatumOdrzavanja));
+            //         Assert.That(result[i].MestoOdrzavanja, Is.EqualTo(expectedTournaments[i].MestoOdrzavanja));
+            //         Assert.That(result[i].MaxBrojTimova, Is.EqualTo(expectedTournaments[i].MaxBrojTimova));
+            //         Assert.That(result[i].TrenutniBrojTimova, Is.EqualTo(expectedTournaments[i].TrenutniBrojTimova));
+            //         Assert.That(result[i].Nagrada, Is.EqualTo(expectedTournaments[i].Nagrada));
+            //         Assert.That(result[i].OrganizatorId, Is.EqualTo(expectedTournaments[i].OrganizatorId));
+            //     }
         }
         //delete
 

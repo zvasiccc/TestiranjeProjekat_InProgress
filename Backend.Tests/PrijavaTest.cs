@@ -108,20 +108,69 @@ namespace Backend.Tests
         //     });
 
         // }
+        // [Test]
+        //  [TestCase("Tim1", 2, 3, 1, 2, new int[] { 4, 5, 999 }, 2)]
+        // [TestCase("Tim1", 2, 3, 1, 2, new int[] { 4, 5, 999, 1000 }, 2)]//provera da 2 igraca ne postoje
+        // public async Task CreateRegistration_NonExistingPlayerAsync(string nazivTima, int brojSlusalica, int brojRacunara, int brojTastatura, int brojMiseva, int[] igraciId, int turnirId)
+        // {
+
+        //     var postojeciIgraci = appContext.Igraci.Where(p => igraciId.Contains(p.Id)).ToList();
+        //     if (postojeciIgraci.Count == igraciId.Count()) //jer je cilj testa da je neki id nepostojeci
+        //         throw new ExistingPlayerException();
+
+        //     var turnir = await appContext.Turniri.FindAsync(turnirId);
+        //     if (turnir == null)
+        //         throw new NonExistingTournamentException();
+
+        //     var turnirDTO = new TurnirDTO
+        //     {
+        //         Id = turnir.Id,
+        //         Naziv = turnir.Naziv,
+        //         MaxBrojTimova = turnir.MaxBrojTimova,
+        //         TrenutniBrojTimova = turnir.TrenutniBrojTimova,
+        //         DatumOdrzavanja = turnir.DatumOdrzavanja,
+        //         MestoOdrzavanja = turnir.MestoOdrzavanja,
+        //         Nagrada = turnir.Nagrada,
+        //         OrganizatorId = turnir.Organizator?.Id
+        //     };
+        //     var igraci = appContext.Igraci.Where(p => igraciId.Contains(p.Id)).ToList();
+        //     var igraciDTO = igraci.Select(p =>
+        //         new IgracDTO
+        //         {
+        //             Id = p.Id,
+        //             KorisnickoIme = p.KorisnickoIme,
+        //             Ime = p.Ime,
+        //             Prezime = p.Prezime,
+        //             VodjaTima = p.VodjaTima
+        //         }
+        //     ).ToList();
+        //     var prijava = new PrijavaDTO2
+        //     {
+        //         NazivTima = nazivTima,
+        //         PotrebanBrojSlusalica = brojSlusalica,
+        //         PotrebanBrojRacunara = brojRacunara,
+        //         PotrebanBrojTastatura = brojTastatura,
+        //         PotrebanBrojMiseva = brojMiseva,
+        //         Igraci = igraciDTO,
+        //         Turnir = turnirDTO
+
+        //     };
+        //     Assert.ThrowsAsync<NonExistingPlayerException>(async () =>
+        //     {
+        //         await prijavaController.dodajPrijavu(prijava);
+        //     });
+        // }
         [Test]
-        // [TestCase("Tim1", 2, 3, 1, 2, new int[] { 4, 5, 999 }, 2)]
-        [TestCase("Tim1", 2, 3, 1, 2, new int[] { 4, 5, 999, 1000 }, 2)]//provera da 2 igraca ne postoje
+        [TestCase("Tim1", 2, 3, 1, 2, new int[] { 4, 5, 999, 1000 }, 2)] // Provera da 2 igrača ne postoje
         public async Task CreateRegistration_NonExistingPlayerAsync(string nazivTima, int brojSlusalica, int brojRacunara, int brojTastatura, int brojMiseva, int[] igraciId, int turnirId)
         {
-
+            // Pronađi sve igrače u bazi koji odgovaraju prosleđenim ID-ovima
             var postojeciIgraci = appContext.Igraci.Where(p => igraciId.Contains(p.Id)).ToList();
-            if (postojeciIgraci.Count == igraciId.Count()) //jer je cilj testa da je neki id nepostojeci
-                throw new ExistingPlayerException();
 
+            // Kreiraj DTO za turnir
             var turnir = await appContext.Turniri.FindAsync(turnirId);
             if (turnir == null)
                 throw new NonExistingTournamentException();
-
 
             var turnirDTO = new TurnirDTO
             {
@@ -134,17 +183,22 @@ namespace Backend.Tests
                 Nagrada = turnir.Nagrada,
                 OrganizatorId = turnir.Organizator?.Id
             };
-            var igraci = appContext.Igraci.Where(p => igraciId.Contains(p.Id)).ToList();
-            var igraciDTO = igraci.Select(p =>
-                new IgracDTO
+
+            // Kreiraj DTO za igrače (uključujući i nepostojeće)
+            var igraciDTO = igraciId.Select(id =>
+            {
+                var igrac = postojeciIgraci.FirstOrDefault(p => p.Id == id);
+                return new IgracDTO
                 {
-                    Id = p.Id,
-                    KorisnickoIme = p.KorisnickoIme,
-                    Ime = p.Ime,
-                    Prezime = p.Prezime,
-                    VodjaTima = p.VodjaTima
-                }
-            ).ToList();
+                    Id = id,
+                    KorisnickoIme = igrac?.KorisnickoIme ?? $"Nepostojeci{id}",
+                    Ime = igrac?.Ime ?? $"ImeNepostojeci{id}",
+                    Prezime = igrac?.Prezime ?? $"PrezimeNepostojeci{id}",
+                    VodjaTima = igrac?.VodjaTima ?? false
+                };
+            }).ToList();
+
+            // Kreiraj objekat prijave sa svim igračima, uključujući i nepostojeće
             var prijava = new PrijavaDTO2
             {
                 NazivTima = nazivTima,
@@ -154,13 +208,15 @@ namespace Backend.Tests
                 PotrebanBrojMiseva = brojMiseva,
                 Igraci = igraciDTO,
                 Turnir = turnirDTO
-
             };
+
+            // Provera da metoda baca očekivanu iznimku za nepostojeće igrače
             Assert.ThrowsAsync<NonExistingPlayerException>(async () =>
             {
                 await prijavaController.dodajPrijavu(prijava);
             });
         }
+
         [Test]
         [TestCase("Tim4", 2, 3, 1, 2, new int[] { 8, 9 }, 2)]
         public async Task CreateRegistration_NonExistingTeamLeaderAsync(string nazivTima, int brojSlusalica, int brojRacunara, int brojTastatura, int brojMiseva, int[] igraciId, int turnirId)
@@ -214,7 +270,7 @@ namespace Backend.Tests
             });
         }
         [Test]
-        [TestCase("Tim6", 2, 3, 1, 2, new int[] { 8, 9 }, 6)]
+        [TestCase("Tim6", 2, 3, 1, 2, new int[] { 2, 8, 9 }, 6)]
         public async Task CreateRegistration_FullTournamentCapacity(string nazivTima, int brojSlusalica, int brojRacunara, int brojTastatura, int brojMiseva, int[] igraciId, int turnirId)
         {
 

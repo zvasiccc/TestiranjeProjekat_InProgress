@@ -43,8 +43,8 @@ namespace TestiranjeProjekat.Controllers
 
                 if (igrac == null)
                 {
-                    Console.WriteLine("opa" + igrac.Id);
-                    throw new NonExistingPlayerException($"Igrac sa ID= {igracDto.Id} ne postoji u bazi");
+
+                    throw new NonExistingPlayerException();
                 }
             }
 
