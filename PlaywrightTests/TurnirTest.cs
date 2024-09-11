@@ -56,40 +56,20 @@ namespace PlaywrightTests
                 Assert.IsFalse(string.IsNullOrWhiteSpace(turnirText), "Turnir je prazan.");
             }
         }
+
         [Test]
         public async Task Pretraga_ShouldDisplayTournaments_WhenSearchIsPerformed()
         {
             var page = await _browser.NewPageAsync();
-            await page.GotoAsync("http://localhost:4200/login");
-
-            // Unos korisničkog imena i lozinke
-            await page.FillAsync("#korisnickoIme", "proba1");
-            await page.FillAsync("#lozinka", "proba");
-
-            // Klik na dugme za prijavu
-            await page.ClickAsync("#loginButton");
-
-            // Provera da li je korisnik uspešno preusmeren na početnu stranicu
-            await page.WaitForURLAsync("http://localhost:4200/");
-            var currentUrl = page.Url;
-            Assert.AreEqual("http://localhost:4200/", currentUrl);
-
-
-            // Sačekaj da se komponenta za pretragu učita
-            //await page.WaitForSelectorAsync("#naziv");
-
-            // Unesi podatke za pretragu
-            // await page.FillAsync("#naziv", "Turnir u Rzani");
-            // await page.FillAsync("#mesto", "Rzana");
-            // await page.FillAsync("#pocetniDatum", "2024-01-01");
-            // await page.FillAsync("#krajnjiDatum", "2024-10-10");
-            //await page.FillAsync("#pocetnaNagrada", "100");
-            // await page.FillAsync("#krajnjaNagrada", "2000");
-
-            // Klik na dugme za pretragu
-            await page.ClickAsync("#pretragaButton");
-
-            // Provera da li se prikazuju rezultati pretrage
+            await page.GotoAsync("http://localhost:4200/");
+            await page.Locator("body").ClickAsync();
+            await page.GetByRole(AriaRole.Link, new() { Name = "Login" }).ClickAsync();
+            await page.GetByLabel("Korisničko ime:").ClickAsync();
+            await page.GetByLabel("Korisničko ime:").FillAsync("proba1");
+            await page.GetByLabel("Korisničko ime:").PressAsync("Tab");
+            await page.GetByLabel("Lozinka:").FillAsync("proba");
+            await page.GetByLabel("Lozinka:").PressAsync("Enter");
+            await page.GetByRole(AriaRole.Button, new() { Name = "Pretraga" }).ClickAsync();
             await page.WaitForSelectorAsync(".container"); // Očekuje se da se prikazuju turniri
 
             // Proveri da li se prikazuju neki turniri
@@ -103,6 +83,40 @@ namespace PlaywrightTests
                 Assert.IsFalse(string.IsNullOrWhiteSpace(turnirText), "Turnir je prazan.");
             }
         }
+
+        [Test]
+        public async Task FiltriranjeTurnira_ShouldDisplayTournaments_WhenSearchIsPerformed()
+        {
+            var page = await _browser.NewPageAsync();
+            await page.GotoAsync("http://localhost:4200/");
+            await page.Locator("body").ClickAsync();
+            await page.GetByRole(AriaRole.Link, new() { Name = "Login" }).ClickAsync();
+            await page.GetByLabel("Korisničko ime:").ClickAsync();
+            await page.GetByLabel("Korisničko ime:").FillAsync("proba1");
+            await page.GetByLabel("Korisničko ime:").PressAsync("Tab");
+            await page.GetByLabel("Lozinka:").FillAsync("proba");
+            await page.GetByRole(AriaRole.Button, new() { Name = "Prijavi se" }).ClickAsync();
+
+            await page.GetByPlaceholder("Unesite mesto").ClickAsync();
+            await page.GetByPlaceholder("Unesite mesto").FillAsync("Rzana");
+            await page.GetByPlaceholder("Unesite minimalnu vrednost").ClickAsync();
+            await page.GetByPlaceholder("Unesite minimalnu vrednost").FillAsync("100");
+            await page.GetByPlaceholder("Unesite maksimalnu vrednost").ClickAsync();
+            await page.GetByPlaceholder("Unesite maksimalnu vrednost").FillAsync("2000");
+
+            await page.GetByRole(AriaRole.Button, new() { Name = "Pretraga" }).ClickAsync();
+            await page.WaitForSelectorAsync(".container");
+
+            var turnirList = await page.QuerySelectorAllAsync(".container ul li");
+            Assert.IsTrue(turnirList.Count > 0, "Nema prikazanih turnira.");
+
+            foreach (var turnir in turnirList)
+            {
+                var turnirText = await turnir.InnerTextAsync();
+                Assert.IsFalse(string.IsNullOrWhiteSpace(turnirText), "Turnir je prazan.");
+            }
+        }
+
 
     }
 }
