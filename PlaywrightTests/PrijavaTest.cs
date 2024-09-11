@@ -116,7 +116,7 @@ namespace PlaywrightTests
             {
                 Console.WriteLine($"Dialog message: {dialog.Message}");
                 await dialog.DismissAsync();
-            }; //mozda ispred profil i pocetnu ovo 
+            };
             var izbrisiPrijavuButtonCount1 = await page.Locator("div.turnir")
             .Filter(new() { Has = page.Locator("h2", new() { HasText = "Turnir u Berilovac" }) })
             .GetByRole(AriaRole.Button, new() { Name = "Izbrisi prijavu" })
@@ -152,7 +152,7 @@ namespace PlaywrightTests
             await page.GetByRole(AriaRole.Button, new() { Name = "Pretraga" }).ClickAsync();
             await page.Locator("div.turnir")
            .Filter(new() { Has = page.Locator("h2", new() { HasText = "Turnir u Rzani" }) })
-          .GetByRole(AriaRole.Button, new() { Name = "Prijavljeni timovi" }).ClickAsync();
+           .GetByRole(AriaRole.Button, new() { Name = "Prijavljeni timovi" }).ClickAsync();
 
             // Provera da li postoji barem jedan prijavljeni tim
             var prijavaList = await page.QuerySelectorAllAsync("ul > li");
