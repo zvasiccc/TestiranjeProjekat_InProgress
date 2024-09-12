@@ -29,8 +29,8 @@ namespace TestiranjeProjekat.Controllers
             }
             return turniri;
         }
-        [HttpGet("mojiTurniri/{igracid}")]
-        public async Task<List<TurnirDTO>> MojiTurniri(int igracId)
+        [HttpGet("mojiTurniriIgrac/{igracid}")]
+        public async Task<List<TurnirDTO>> MojiTurniri_Igrac(int igracId)
         {
 
             var turniri = await _context.PrijavaIgracSpoj
@@ -47,6 +47,28 @@ namespace TestiranjeProjekat.Controllers
                     OrganizatorId = pis.Prijava.Turnir.Organizator.Id
                 })
                 .ToListAsync();
+            return turniri;
+        }
+        //todo testovi za organizatorovi turniri isti kao za igraca
+        [HttpGet("mojiTurniriOrganizator/{organizatorId}")]
+        public async Task<List<TurnirDTO>> MojiTurniri_Organizator(int organizatorId)
+        {
+            var organizator = await _context.Organizatori.FindAsync(organizatorId);
+            if (organizator == null) throw new NonExistingOrganizatorException();
+
+            var turniri = await _context.Turniri.Where(t => t.Organizator.Id == organizatorId)
+            .Select(t => new TurnirDTO
+            {
+                Id = t.Id,
+                Naziv = t.Naziv,
+                DatumOdrzavanja = t.DatumOdrzavanja,
+                MestoOdrzavanja = t.MestoOdrzavanja,
+                MaxBrojTimova = t.MaxBrojTimova,
+                TrenutniBrojTimova = t.TrenutniBrojTimova,
+                Nagrada = t.Nagrada,
+                OrganizatorId = t.Organizator.Id
+            }).ToListAsync();
+
             return turniri;
         }
         [HttpPost("dodajTurnir")]
@@ -129,6 +151,9 @@ namespace TestiranjeProjekat.Controllers
         public async Task ObrisiTurnir(int turnirId)
         {
             var turnir = await _context.Turniri.FindAsync(turnirId);
+            if (turnir == null)
+                throw new NonExistingTournamentException();
+
             _context.Turniri.Remove(turnir);
             await _context.SaveChangesAsync();
         }

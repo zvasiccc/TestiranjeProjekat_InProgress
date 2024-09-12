@@ -35,11 +35,11 @@ namespace PlaywrightTests
             var page = await _browser.NewPageAsync();
             await page.GotoAsync("http://localhost:4200/login");
 
-            // Unos korisničkog imena i lozinke
-            await page.FillAsync("#korisnickoIme", "zeljko123");
-            await page.FillAsync("#lozinka", "zeljko"); // Zameni sa stvarnim ID-om
 
-            // Klik na dugme za prijavu
+            await page.FillAsync("#korisnickoIme", "zeljkoLogin");
+            await page.FillAsync("#lozinka", "zeljko");
+
+
             await page.ClickAsync("#loginButton");
 
 
@@ -47,15 +47,15 @@ namespace PlaywrightTests
             var currentUrl = page.Url;
             Assert.AreEqual("http://localhost:4200/", currentUrl);
 
-            // Klik na link za navigaciju na profil
+
             await page.ClickAsync("a:has-text('Profil')");
 
-            // Provera da li se prikazuje profil
-            await page.WaitForSelectorAsync(".profile-container"); // Očekuje se da profil bude prikazan
-            var korisnickoImeNaStranici = await page.TextContentAsync(".profile-container h1");
-            Assert.IsTrue(korisnickoImeNaStranici.Contains("Dobrodošli, zeljko123")); // Proveri da li je korisničko ime ispravno
 
-            // Ako je potrebno, dodaj dodatne provere za profil
+            await page.WaitForSelectorAsync(".profile-container");
+            var korisnickoImeNaStranici = await page.TextContentAsync(".profile-container h1");
+            Assert.IsTrue(korisnickoImeNaStranici.Contains("Dobrodošli, zeljkoLogin"));
+
+
         }
 
         [Test]

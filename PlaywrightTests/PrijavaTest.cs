@@ -45,7 +45,7 @@ namespace PlaywrightTests
             .ClickAsync();
 
 
-            await page.Locator("li").Filter(new() { HasText = "Korisnicko ime: zeljkoIme:" }).GetByRole(AriaRole.Button).ClickAsync();
+            await page.Locator("li").Filter(new() { HasText = "Korisnicko ime: milos:" }).GetByRole(AriaRole.Button).ClickAsync();
             await page.GetByRole(AriaRole.Button, new() { Name = "Preference" }).ClickAsync();
 
 

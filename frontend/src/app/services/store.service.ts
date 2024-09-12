@@ -24,9 +24,6 @@ export class StoreService {
     this.trenutnoPrijavljeniKorisnik$ = this.store
       .select(selectPrijavljeniKorisnik)
       .pipe(map((p: any) => p?.prijavljeniKorisnik));
-    this.trenutnoPrijavljeniKorisnik$.subscribe((korisnik) => {
-      console.log('Trenutno prijavljeni korisnik:', korisnik);
-    });
   }
   public pribaviHeaders(): HttpHeaders {
     let jwtTokenObservable = this.store
@@ -42,16 +39,7 @@ export class StoreService {
     return this.headers;
   }
   public pribaviTrenutnoPrijavljenogKorisnika() {
-    this.trenutnoPrijavljeniKorisnik$
-      .pipe(
-        tap((korisnik) => {
-          console.log(
-            'Trenutno prijavljeni korisnik (iz pribaviTrenutnoPrijavljenogKorisnika):',
-            korisnik
-          );
-        })
-      )
-      .subscribe(); // Pretplata radi samo za ispis, bez daljeg korišćenja
+    this.trenutnoPrijavljeniKorisnik$.pipe().subscribe();
     return this.trenutnoPrijavljeniKorisnik$;
   }
   public pribaviIdPrijavljenogKorisnika(): number {

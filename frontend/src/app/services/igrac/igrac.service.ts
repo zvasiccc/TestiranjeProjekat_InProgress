@@ -148,7 +148,6 @@ export class IgracService {
     igracId: number
   ): Observable<boolean> {
     const headers = this.storeService.pribaviHeaders();
-    console.log('ooooooop', turnirId, igracId);
     const url =
       this.urlIgrac + `daLiJeIgracPrijavljenNaTurnir/${turnirId}/${igracId}`;
     return this.http.get<boolean>(url, { headers });

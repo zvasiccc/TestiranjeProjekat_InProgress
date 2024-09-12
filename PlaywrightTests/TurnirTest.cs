@@ -155,7 +155,7 @@ namespace PlaywrightTests
             await page.WaitForSelectorAsync(".container"); // Očekuje se da se prikazuju turniri
             var turnirLocator = page.Locator("ul.turnir-list > li")
             .Locator("app-turnir")
-            .Locator("text=Turnir 123");
+            .Locator("text=Novokreirani turnir");
 
             var turnirCount = await turnirLocator.CountAsync();
             Assert.IsTrue(turnirCount == 0);
@@ -165,7 +165,7 @@ namespace PlaywrightTests
 
             // Popuni formu za kreiranje turnira
             await page.GetByLabel("Naziv:").ClickAsync();
-            await page.GetByLabel("Naziv:").FillAsync("Turnir 123");
+            await page.GetByLabel("Naziv:").FillAsync("Novokreirani turnir");
             await page.GetByLabel("Datum održavanja:").FillAsync("2024-09-18");
             await page.GetByLabel("Mesto održavanja:").ClickAsync();
             await page.GetByLabel("Mesto održavanja:").FillAsync("Nis");
@@ -178,7 +178,7 @@ namespace PlaywrightTests
             await page.WaitForSelectorAsync(".container");
             turnirLocator = page.Locator("ul.turnir-list > li")
             .Locator("app-turnir")
-            .Locator("text=Turnir 123");
+            .Locator("text=Novokreirani turnir");
 
             turnirCount = await turnirLocator.CountAsync();
             Assert.IsTrue(turnirCount == 1);

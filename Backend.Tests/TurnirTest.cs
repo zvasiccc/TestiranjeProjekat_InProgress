@@ -23,6 +23,9 @@ namespace Backend.Tests
         [TestCase("Turnir Rzana", "Rzana", "12.3.2025.", 16, 3, 500, 3)]
         public async Task createTournament_Success(string naziv, string mestoOdrzavanja, string datumOdrzavanja, int maxBrojTimova, int trenutniBrojTimova, int nagrada, int organizatorId)
         {
+            var organizator = await appContext.Organizatori.FindAsync(organizatorId);
+            if (organizator == null)
+                throw new NonExistingOrganizatorException();
             var noviTurnirDTO = new TurnirDTO
             {
                 Naziv = naziv,
@@ -49,6 +52,9 @@ namespace Backend.Tests
         [TestCase("Turnir Rzana", "Rzana", "12.3.2025.", 16, 3, 500, 99)]
         public async Task CreateTournamentNonExistingOrganizator(string naziv, string mestoOdrzavanja, string datumOdrzavanja, int maxBrojTimova, int trenutniBrojTimova, int nagrada, int organizatorId)
         {
+            var organizator = await appContext.Organizatori.FindAsync(organizatorId);
+            if (organizator != null)
+                throw new ExistingOrganizatorException(); //organizator postoji a za test mora da ne postoji
             var noviTurnirDTO = new TurnirDTO
             {
                 Naziv = naziv,
@@ -66,6 +72,9 @@ namespace Backend.Tests
         [TestCase("Turnir Rzana", "Rzana", "", 16, 3, 500, 3)]
         public async Task createTournament_EmptyDatumOdrzavanja_ThrowsEmptyFieldException(string naziv, string mestoOdrzavanja, string datumOdrzavanja, int maxBrojTimova, int trenutniBrojTimova, int nagrada, int organizatorId)
         {
+            var organizator = await appContext.Organizatori.FindAsync(organizatorId);
+            if (organizator == null)
+                throw new NonExistingOrganizatorException();
             var noviTurnirDTO = new TurnirDTO
             {
                 Naziv = naziv,
@@ -105,14 +114,24 @@ namespace Backend.Tests
         public async Task PlayerTournaments_ReturnsEmptyList_WhenPlayerIsNotRegisteredForAnyTournaments(int playerId)
         {
 
-            var result = await turnirController.MojiTurniri(playerId);
+            var result = await turnirController.MojiTurniri_Igrac(playerId);
+            Assert.IsEmpty(result);
+        }
+        [Test]
+        [TestCase(3)]
+        public async Task OrganizatorTournaments_ReturnsEmptyList_WhenOrganizator_DidntCreateAnyTournamen(int organizatorId)
+        {
+
+            var result = await turnirController.MojiTurniri_Organizator(organizatorId);
             Assert.IsEmpty(result);
         }
         [Test]
         [TestCase(11)]
         public async Task PlayerTournaments_ReturnsSingleTournament_WhenPlayerIsRegisteredForOneTournament(int playerId)
         {
-
+            var player = await appContext.Igraci.FindAsync(playerId);
+            if (player == null)
+                throw new NonExistingPlayerException("nisu zadovoljeni uslovi testa");
             var expectedTournaments = appContext.PrijavaIgracSpoj
                  .Where(pis => pis.IgracId == playerId)
                  .Select(pis => new TurnirDTO
@@ -128,10 +147,33 @@ namespace Backend.Tests
                  .ToList();
 
             // Act
-            var result = await turnirController.MojiTurniri(playerId);
-            //todo zasto ne uhvbati nista u result nakon prvo pokretanje
-            // throw new Exception($"count je {result.Count}");
-            // Assert.That(1, Is.EqualTo(result.Count));
+            var result = await turnirController.MojiTurniri_Igrac(playerId);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result, Is.EqualTo(expectedTournaments));
+        }
+        [Test]
+        [TestCase(1)]
+        public async Task OrganizatorTournaments_ReturnsSingleTournament_WhenOrganizatorCreatedOneTournament(int organizatorId)
+        {
+            var organizator = await appContext.Organizatori.FindAsync(organizatorId);
+            if (organizator == null)
+                throw new NonExistingOrganizatorException("organizator ne postoji i nisu zadovoljeni uslovi testa");
+            var expectedTournaments = await appContext.Turniri.Where(t => t.Organizator.Id == organizatorId)
+           .Select(t => new TurnirDTO
+           {
+               Id = t.Id,
+               Naziv = t.Naziv,
+               DatumOdrzavanja = t.DatumOdrzavanja,
+               MestoOdrzavanja = t.MestoOdrzavanja,
+               MaxBrojTimova = t.MaxBrojTimova,
+               TrenutniBrojTimova = t.TrenutniBrojTimova,
+               Nagrada = t.Nagrada,
+               OrganizatorId = t.Organizator.Id
+           }).ToListAsync();
+
+            // Act
+            var result = await turnirController.MojiTurniri_Organizator(organizatorId);
+            Assert.That(result.Count, Is.EqualTo(1));
             Assert.That(result, Is.EqualTo(expectedTournaments));
         }
 
@@ -154,23 +196,55 @@ namespace Backend.Tests
                 .ToList();
 
             // Act
-            var result = await turnirController.MojiTurniri(playerId);
+            var result = await turnirController.MojiTurniri_Igrac(playerId);
             Assert.That(result, Is.EqualTo(expectedTournaments));
 
-            //     // Assert
-            //     Assert.That(result.Count, Is.EqualTo(expectedTournaments.Count));
-            //     for (int i = 0; i < expectedTournaments.Count; i++)
-            //     {
-            //         Assert.That(result[i].Naziv, Is.EqualTo(expectedTournaments[i].Naziv));
-            //         Assert.That(result[i].DatumOdrzavanja, Is.EqualTo(expectedTournaments[i].DatumOdrzavanja));
-            //         Assert.That(result[i].MestoOdrzavanja, Is.EqualTo(expectedTournaments[i].MestoOdrzavanja));
-            //         Assert.That(result[i].MaxBrojTimova, Is.EqualTo(expectedTournaments[i].MaxBrojTimova));
-            //         Assert.That(result[i].TrenutniBrojTimova, Is.EqualTo(expectedTournaments[i].TrenutniBrojTimova));
-            //         Assert.That(result[i].Nagrada, Is.EqualTo(expectedTournaments[i].Nagrada));
-            //         Assert.That(result[i].OrganizatorId, Is.EqualTo(expectedTournaments[i].OrganizatorId));
-            //     }
+
+        }
+        [Test]
+        [TestCase(5)]
+        public async Task OrganizatorTournaments_ReturnsMultipleTournament(int organizatorId)
+        {
+            var organizator = await appContext.Organizatori.FindAsync(organizatorId);
+            if (organizator == null)
+                throw new NonExistingOrganizatorException("organizator ne postoji i nisu zadovoljeni uslovi testa");
+            var expectedTournaments = await appContext.Turniri.Where(t => t.Organizator.Id == organizatorId)
+           .Select(t => new TurnirDTO
+           {
+               Id = t.Id,
+               Naziv = t.Naziv,
+               DatumOdrzavanja = t.DatumOdrzavanja,
+               MestoOdrzavanja = t.MestoOdrzavanja,
+               MaxBrojTimova = t.MaxBrojTimova,
+               TrenutniBrojTimova = t.TrenutniBrojTimova,
+               Nagrada = t.Nagrada,
+               OrganizatorId = t.Organizator.Id
+           }).ToListAsync();
+
+            // Act
+            var result = await turnirController.MojiTurniri_Organizator(organizatorId);
+
+            Assert.That(result, Is.EqualTo(expectedTournaments));
         }
         //delete
+        [Test]
+        [TestCase(6)]
+        public async Task DeleteTournament_Success(int turnirId)
+        {
+            var turnir = await appContext.Turniri.FindAsync(turnirId);
+            if (turnir == null)
+                throw new NonExistingTournamentException("turnir ne postoji i ne moze da se obrise, nisu zadovoljeni uslovi testa");
+
+            await turnirController.ObrisiTurnir(turnirId);
+            turnir = await appContext.Turniri.FindAsync(turnirId);
+            Assert.Null(turnir);
+        }
+        [Test]
+        [TestCase(99)]
+        public void DeleteTournament_NonExistingTournament(int turnirId)
+        {
+            Assert.ThrowsAsync<NonExistingTournamentException>(async () => await turnirController.ObrisiTurnir(turnirId));
+        }
 
     }
 }

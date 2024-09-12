@@ -21,6 +21,7 @@ export class ProfilComponent {
   trenutnoPrijavljeniKorisnik$: Observable<Igrac | Organizator | undefined> =
     this.storeService.pribaviTrenutnoPrijavljenogKorisnika().pipe(
       tap((x) => {
+        console.log(this.role);
         this.korisnickoIme = x?.korisnickoIme ? x!.korisnickoIme : '';
         this.ime = x?.ime ? x!.ime : '';
         this.prezime = x?.prezime ? x!.prezime : '';

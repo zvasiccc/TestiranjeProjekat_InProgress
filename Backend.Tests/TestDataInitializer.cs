@@ -36,10 +36,11 @@ namespace Backend.Tests
             {
                 new Turnir { Id = 1, Naziv = "Turnir 1", DatumOdrzavanja = "2024-09-01", MestoOdrzavanja = "Beograd", MaxBrojTimova = 16, TrenutniBrojTimova = 8, Nagrada = 50000, Organizator = organizatori[0] },
                 new Turnir { Id = 2, Naziv = "Turnir 2", DatumOdrzavanja = "2024-09-10", MestoOdrzavanja = "Novi Sad", MaxBrojTimova = 8, TrenutniBrojTimova = 4, Nagrada = 30000, Organizator = organizatori[1] },
-                new Turnir { Id = 3, Naziv = "Turnir 3", DatumOdrzavanja = "2024-09-15", MestoOdrzavanja = "Nis", MaxBrojTimova = 8, TrenutniBrojTimova = 5, Nagrada = 40000, Organizator = organizatori[2] },
+                new Turnir { Id = 3, Naziv = "Turnir 3", DatumOdrzavanja = "2024-09-15", MestoOdrzavanja = "Nis", MaxBrojTimova = 8, TrenutniBrojTimova = 5, Nagrada = 40000, Organizator = organizatori[4] },
                 new Turnir { Id = 4, Naziv = "Turnir 4", DatumOdrzavanja = "2024-09-20", MestoOdrzavanja = "Kragujevac", MaxBrojTimova = 32, TrenutniBrojTimova = 6, Nagrada = 35000, Organizator = organizatori[3] },
                 new Turnir { Id = 5, Naziv = "Turnir 5", DatumOdrzavanja = "2024-09-25", MestoOdrzavanja = "Subotica", MaxBrojTimova = 16, TrenutniBrojTimova = 7, Nagrada = 4000, Organizator = organizatori[4] },
-                new Turnir { Id = 6, Naziv = "Turnir 6", DatumOdrzavanja = "2024-09-25", MestoOdrzavanja = "Kraljevo", MaxBrojTimova = 64, TrenutniBrojTimova = 64, Nagrada = 45000, Organizator = organizatori[4] }
+                new Turnir { Id = 6, Naziv = "Turnir 6", DatumOdrzavanja = "2024-09-25", MestoOdrzavanja = "Kraljevo", MaxBrojTimova = 64, TrenutniBrojTimova = 64, Nagrada = 45000, Organizator = organizatori[4] },
+                new Turnir { Id = 6, Naziv = "Turnir 7", DatumOdrzavanja = "2024-05-12", MestoOdrzavanja = "Jagodina", MaxBrojTimova = 64, TrenutniBrojTimova = 64, Nagrada = 45000, Organizator = organizatori[3] }
             };
             //dodavanje turnira u organizatorovu listu turnira
             foreach (var turnir in turniri)

@@ -22,6 +22,8 @@ import { Igrac } from 'src/app/shared/models/igrac';
 })
 export class TurnirService {
   idKorisnika: number | undefined;
+  role: string = '';
+
   trenutnoPrijavljeniKorisnik$: Observable<Igrac | Organizator | undefined> =
     this.storeService.pribaviTrenutnoPrijavljenogKorisnika();
   private turnirUrl = 'http://localhost:5101/Turnir/';
@@ -31,7 +33,12 @@ export class TurnirService {
     private store: Store,
     private http: HttpClient,
     private storeService: StoreService
-  ) {}
+  ) {
+    this.trenutnoPrijavljeniKorisnik$.subscribe((korisnik) => {
+      this.role = korisnik?.role as string;
+    });
+    console.log(this.role);
+  }
 
   getTurniriBaza(): Observable<Turnir[]> {
     const url = this.turnirUrl + 'sviTurniri';
@@ -41,11 +48,18 @@ export class TurnirService {
   }
   getMojiTurniri(idKorisnika: number): Observable<Turnir[]> {
     const headers = this.storeService.pribaviHeaders();
-    const url = this.turnirUrl + `mojiTurniri/${idKorisnika}`;
+
+    var url;
+    console.log(this.role);
+
+    if (this.role == 'organizator')
+      url = this.turnirUrl + `mojiTurniriOrganizator/${idKorisnika}`;
+    else url = this.turnirUrl + `mojiTurniriIgrac/${idKorisnika}`;
     return this.http
       .get<any>(url, { headers })
       .pipe(map((response) => response.$values || []));
   }
+
   // getMojiTurniri(idKorisnika: number): Observable<Turnir[]> {
   //   console.log('id korisnika je' + idKorisnika);
   //   return this.refreshSubject.pipe(
