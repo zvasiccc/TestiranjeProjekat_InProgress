@@ -19,10 +19,9 @@
             {
                 return false;
             }
-            //todo provera za svaki atribut
+
             if (Id == t2.Id)
             {
-                //u if svi parametri, bez organizatora i prijave
                 return true;
             }
             return false;

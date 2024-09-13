@@ -24,7 +24,7 @@ namespace Backend.Tests
             appContext = GlobalSetup.AppContext;
             organizatorController = new OrganizatorController(appContext);
         }
-        //create
+        //!create
         [Test]
         [TestCase("NekiOrganizator", "123", "Jovan", "Jovanovic")]
         public async Task CreateOrganizator_SuccessfullyAddsOrganizator_ReturnSuccessMessage(string korisnickoIme, string lozinka, string ime, string prezime)
@@ -79,7 +79,7 @@ namespace Backend.Tests
             Assert.ThrowsAsync<EmptyFieldException>(async () => await organizatorController.registrujOrganizatora(newOrganizator));
 
         }
-        //read
+        //!read
         [Test]
         [TestCase("organizator1")]
         public async Task getOrganizator_ReturnsSuccess(string korisnickoIme)
@@ -96,7 +96,7 @@ namespace Backend.Tests
         {
             Assert.ThrowsAsync<NonExistingOrganizatorException>(async () => await organizatorController.dohvatiOrganizatora(korisnickoIme));
         }
-        //update
+        //!update
         [Test]
         [TestCase("1", "Organizator1", "Petar", "Petrovic")]
         public async Task updateOrganizatorProfile_Success(int organizatorId, String korisnickoIme, string ime, string prezime)
@@ -154,7 +154,7 @@ namespace Backend.Tests
             Assert.ThrowsAsync<ExistingOrganizatorException>(async () => await organizatorController.izmeniPodatkeOOrganizatoru(organizatorId, newDataOrganizator));
         }
 
-        //delete
+        //!delete
         [Test]
         [TestCase("organizator2")]
         public async Task deleteOrganizator_Succes(string korisnickoIme)

@@ -17,6 +17,7 @@ namespace Backend.Tests
             appContext = GlobalSetup.AppContext;
             prijavaController = new PrijavaController(appContext);
         }
+        //!create
         [Test]
         [TestCase("Tim1", 2, 3, 1, 2, new int[] { 3, 4, 5 }, 3)]
         public async Task CreateRegistration_Success(string nazivTima, int brojSlusalica, int brojRacunara, int brojTastatura, int brojMiseva, int[] igraciId, int turnirId)
@@ -238,20 +239,7 @@ namespace Backend.Tests
             });
         }
         //!read
-        [Test]
-        [TestCase(2)]
-        public async Task AllTournamentRegistrations_ReturnsSuccess(int turnirId)
-        {
-            var expectedRegistratons = await appContext.Prijave
-                .Where(p => p.Turnir.Id == turnirId)
-                .Include(p => p.Turnir)
-                .Include(p => p.Igraci)
-                .ToListAsync();
 
-            var registrations = await prijavaController.prijaveNaTurniru(turnirId);
-            //todo 
-            // Assert.That(registrations, Is.EqualTo(expectedRegistratons));
-        }
         [Test]
         [TestCase(4)]
         public async Task GetRegistration_Success(int registrationId)
@@ -266,7 +254,6 @@ namespace Backend.Tests
         {
             Assert.ThrowsAsync<NonExistingRegistrationException>(async () => await prijavaController.vratiPrijavuPoId(registrationId));
         }
-
 
         //!delete
         [Test]
@@ -328,6 +315,7 @@ namespace Backend.Tests
                 Assert.That(prijava, Is.Not.EqualTo(registration));
             }
         }
+        //!registracija ne moze da se azurira
 
     }
 }

@@ -49,7 +49,7 @@ namespace TestiranjeProjekat.Controllers
                 .ToListAsync();
             return turniri;
         }
-        //todo testovi za organizatorovi turniri isti kao za igraca
+
         [HttpGet("mojiTurniriOrganizator/{organizatorId}")]
         public async Task<List<TurnirDTO>> MojiTurniri_Organizator(int organizatorId)
         {

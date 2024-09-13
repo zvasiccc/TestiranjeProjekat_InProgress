@@ -86,7 +86,7 @@ namespace TestiranjeProjekat.Controllers
             {
                 throw new EmptyFieldException();
             }
-            //todo provera da vec ne postoji takvo korisnicko ime
+
             var existingPlayer = await _context.Igraci.Where(p => p.KorisnickoIme == igrac.KorisnickoIme && p.Id != igracId).FirstOrDefaultAsync();
 
             if (existingPlayer != null) throw new ExistingPlayerException();

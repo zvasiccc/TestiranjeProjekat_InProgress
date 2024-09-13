@@ -18,6 +18,7 @@ namespace Backend.Tests
             appContext = GlobalSetup.AppContext;
             igracController = new IgracController(appContext);
         }
+        //!create
 
         [Test]
         [TestCase("jovann", "jovan123", "Jovan", "Jovanovic", false)]
@@ -77,7 +78,7 @@ namespace Backend.Tests
             };
             Assert.ThrowsAsync<EmptyFieldException>(async () => await igracController.RegistrujIgraca(newPlayer));
         }
-        //read
+        //!read
         [Test]
         [TestCase("nikola1")]
         public async Task getPlayer_ReturnsSuccess(string korisnickoIme)
@@ -115,7 +116,7 @@ namespace Backend.Tests
             Assert.AreEqual(ime, possiblyUpdatedPlyer.Ime);
             Assert.AreEqual(prezime, possiblyUpdatedPlyer.Prezime);
         }
-
+        //!update
         [Test]
         [TestCase("3", "petar123", "petar", "")]
         public async Task updatePlayerProfile_EmptyField(int playerId, string korisnickoIme, string ime, string prezime)
@@ -153,6 +154,7 @@ namespace Backend.Tests
             };
             Assert.ThrowsAsync<NonExistingPlayerException>(async () => await igracController.IzmeniPodatkeOIgracu(playerId, newPlayer));
         }
+
 
     }
 }
