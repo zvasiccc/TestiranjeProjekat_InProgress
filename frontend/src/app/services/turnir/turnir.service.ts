@@ -60,21 +60,6 @@ export class TurnirService {
       .pipe(map((response) => response.$values || []));
   }
 
-  // getMojiTurniri(idKorisnika: number): Observable<Turnir[]> {
-  //   console.log('id korisnika je' + idKorisnika);
-  //   return this.refreshSubject.pipe(
-  //     exhaustMap(() => {
-  //       const headers = this.storeService.pribaviHeaders();
-  //       console.log('headers su');
-  //       console.log(headers);
-  //       const url = this.turnirUrl + `mojiTurniri/${idKorisnika}`;
-  //       return this.http
-  //         .get<any>(url, { headers })
-  //         .pipe(map((response) => response.$values || []));
-  //     })
-  //   );
-  // }
-
   refresh() {
     this.refreshSubject.next([]);
   }

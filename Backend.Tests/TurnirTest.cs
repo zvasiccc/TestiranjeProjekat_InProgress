@@ -38,7 +38,6 @@ namespace Backend.Tests
             };
             await turnirController.DodajTurnir(noviTurnirDTO);
 
-            // Assert
             var addedTournament = appContext.Turniri.FirstOrDefault(t => t.Naziv == naziv);
             Assert.IsNotNull(addedTournament);
             Assert.That(addedTournament.MestoOdrzavanja, Is.EqualTo(mestoOdrzavanja));
@@ -146,7 +145,6 @@ namespace Backend.Tests
                  })
                  .ToList();
 
-            // Act
             var result = await turnirController.MojiTurniri_Igrac(playerId);
             Assert.That(result.Count, Is.EqualTo(1));
             Assert.That(result, Is.EqualTo(expectedTournaments));
@@ -171,7 +169,6 @@ namespace Backend.Tests
                OrganizatorId = t.Organizator.Id
            }).ToListAsync();
 
-            // Act
             var result = await turnirController.MojiTurniri_Organizator(organizatorId);
             Assert.That(result.Count, Is.EqualTo(1));
             Assert.That(result, Is.EqualTo(expectedTournaments));
@@ -195,7 +192,6 @@ namespace Backend.Tests
                 })
                 .ToList();
 
-            // Act
             var result = await turnirController.MojiTurniri_Igrac(playerId);
             Assert.That(result, Is.EqualTo(expectedTournaments));
 
@@ -221,7 +217,6 @@ namespace Backend.Tests
                OrganizatorId = t.Organizator.Id
            }).ToListAsync();
 
-            // Act
             var result = await turnirController.MojiTurniri_Organizator(organizatorId);
 
             Assert.That(result, Is.EqualTo(expectedTournaments));

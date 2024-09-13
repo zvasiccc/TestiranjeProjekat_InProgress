@@ -28,10 +28,6 @@ namespace TestiranjeProjekat.Controllers
         [HttpPost("dodajPrijavu")]
         public async Task<Prijava> dodajPrijavu([FromBody] PrijavaDTO2 prijava)
         {
-
-
-            //todo provera da neki od igraca nije prijavbljen na taj turnir i test, ompf
-            //todo provera za prekoracen broj ekipa na turniru i test
             if (prijava.Igraci == null)
             {
                 throw new NonExistingPlayerException();
@@ -63,7 +59,6 @@ namespace TestiranjeProjekat.Controllers
                 PotrebanBrojTastatura = prijava.PotrebanBrojTastatura,
                 PotrebanBrojMiseva = prijava.PotrebanBrojMiseva,
                 Turnir = turnir
-                //Igraci = prijava.Igraci.Select(p => _//context.PrijavaIgracSpoj.FirstOrDefault(q => q.IgracId == p.Id && q.PrijavaId == prijava.Id)).ToList()
 
             };
             if (turnir.TrenutniBrojTimova + 1 > turnir.MaxBrojTimova)
@@ -88,38 +83,7 @@ namespace TestiranjeProjekat.Controllers
             await _context.SaveChangesAsync();
             return novaPrijava;
         }
-        // public async Task<Prijava> dodajPrijavu([FromBody] PrijavaDTO prijava)
-        // {
-        //     //frontend salje celu prijavu sa svim igracima i ne slazu se objekti
-        //     var igraci = await _context.Igraci
-        //         .Where(i => prijava.IgraciId.Contains(i.Id))
-        //         .ToListAsync();
-        //     if (igraci.Count() != prijava.IgraciId.Count())
-        //         throw new NonExistingPlayerException();
-        //     //int idTurnira = prijava.TurnirId;
-        //     var turnir = await _context.Turniri.FindAsync(prijava.TurnirId);
-        //     if (turnir == null)
-        //         throw new NonExistingTournamentException($"tournament with id={prijava.TurnirId} does not exists");
-        //     turnir.TrenutniBrojTimova++;
 
-        //     Prijava novaPrijava = new Prijava
-        //     {
-        //         NazivTima = prijava.NazivTima,
-        //         PotrebanBrojSlusalica = prijava.PotrebanBrojSlusalica,
-        //         PotrebanBrojRacunara = prijava.PotrebanBrojRacunara,
-        //         PotrebanBrojTastatura = prijava.PotrebanBrojTastatura,
-        //         PotrebanBrojMiseva = prijava.PotrebanBrojMiseva,
-        //         Turnir = turnir
-        //     };
-        //     novaPrijava.Igraci = new List<PrijavaIgracSpoj>();
-        //     foreach (var igrac in igraci)
-        //     {
-        //         novaPrijava.Igraci.Add(new PrijavaIgracSpoj { Igrac = igrac });
-        //     }
-        //     await _context.Prijave.AddAsync(novaPrijava);
-        //     await _context.SaveChangesAsync();
-        //     return novaPrijava;
-        // }
 
         [HttpGet("prijaveNaTurniru/{turnirId}")]
         public async Task<List<PrijavaDTO2>> prijaveNaTurniru(int turnirId)

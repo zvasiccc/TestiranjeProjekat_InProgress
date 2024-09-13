@@ -82,7 +82,7 @@ namespace Backend.Tests
         [TestCase("nikola1")]
         public async Task getPlayer_ReturnsSuccess(string korisnickoIme)
         {
-            //todo provera da li postoji igrac
+
             var possiblyExistingPlayer = appContext.Igraci.FirstOrDefaultAsync(i => i.KorisnickoIme == korisnickoIme);
             if (possiblyExistingPlayer == null) throw new ExistingPlayerException("The test conditions are not met because a player with that username does not exist");
             var result = await igracController.DohvatiIgraca(korisnickoIme);
@@ -93,7 +93,6 @@ namespace Backend.Tests
         [TestCase("player999")]
         public async Task getPlayer_NonExistingPlayer_Success(string korisnickoIme)
         {
-            //todo provera da li ne postoji igrac
 
             var possiblyExistingPlayer = await appContext.Igraci.FirstOrDefaultAsync(i => i.KorisnickoIme == korisnickoIme);
             if (possiblyExistingPlayer != null) throw new ExistingPlayerException("The test conditions are not met because a player with that username exists");
@@ -116,7 +115,7 @@ namespace Backend.Tests
             Assert.AreEqual(ime, possiblyUpdatedPlyer.Ime);
             Assert.AreEqual(prezime, possiblyUpdatedPlyer.Prezime);
         }
-        //todo test za empty field, prezime najbolje
+
         [Test]
         [TestCase("3", "petar123", "petar", "")]
         public async Task updatePlayerProfile_EmptyField(int playerId, string korisnickoIme, string ime, string prezime)
@@ -129,7 +128,7 @@ namespace Backend.Tests
             };
             Assert.ThrowsAsync<EmptyFieldException>(async () => await igracController.IzmeniPodatkeOIgracu(playerId, newPlayer));
         }
-        //todo test za update tako da korisnicko ime vec postoji u bazi 
+
         [Test]
         [TestCase("4", "vladimir9", "vladimirr", "vladimirovic")]
         public async Task updatePlayerProfile_ExistingUsername(int playerId, string korisnickoIme, string ime, string prezime)

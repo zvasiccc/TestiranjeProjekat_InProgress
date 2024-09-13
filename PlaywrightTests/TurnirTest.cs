@@ -27,22 +27,16 @@ namespace PlaywrightTests
             var page = await _browser.NewPageAsync();
             await page.GotoAsync("http://localhost:4200/login");
 
-
             await page.FillAsync("#korisnickoIme", "proba1");
             await page.FillAsync("#lozinka", "proba");
-            // Klik na dugme za prijavu
+
             await page.ClickAsync("#loginButton");
 
-
             await page.GetByRole(AriaRole.Link, new() { Name = "Moji turniri" }).ClickAsync();
-
             await page.WaitForSelectorAsync(".container");
-
 
             var turnirList = await page.QuerySelectorAllAsync(".container ul li");
             Assert.IsTrue(turnirList.Count > 0, "Nema prikazanih turnira.");
-
-
             foreach (var turnir in turnirList)
             {
                 var turnirText = await turnir.InnerTextAsync();
@@ -57,11 +51,9 @@ namespace PlaywrightTests
 
             await page.FillAsync("#korisnickoIme", "dzontra");
             await page.FillAsync("#lozinka", "dzontric");
-            // Klik na dugme za prijavu
             await page.ClickAsync("#loginButton");
 
             await page.ClickAsync("a[routerLink='mojiTurniri']");
-
             await page.WaitForSelectorAsync(".container");
 
             var turnirList = await page.QuerySelectorAllAsync(".container ul li");
@@ -160,10 +152,8 @@ namespace PlaywrightTests
             var turnirCount = await turnirLocator.CountAsync();
             Assert.IsTrue(turnirCount == 0);
 
-            // Navigiraj do stranice za kreiranje turnira
             await page.GetByRole(AriaRole.Link, new() { Name = "Kreiraj turnir" }).ClickAsync();
 
-            // Popuni formu za kreiranje turnira
             await page.GetByLabel("Naziv:").ClickAsync();
             await page.GetByLabel("Naziv:").FillAsync("Novokreirani turnir");
             await page.GetByLabel("Datum održavanja:").FillAsync("2024-09-18");
@@ -191,30 +181,23 @@ namespace PlaywrightTests
             await page.GotoAsync("http://localhost:4200/");
             await page.GetByRole(AriaRole.Link, new() { Name = "Login" }).ClickAsync();
 
-            // Prijava korisnika
             await page.GetByLabel("Korisničko ime:").ClickAsync();
             await page.GetByLabel("Korisničko ime:").FillAsync("dzontra");
             await page.GetByLabel("Lozinka:").FillAsync("dzontric");
             await page.GetByRole(AriaRole.Button, new() { Name = "Prijavi se" }).ClickAsync();
 
-            // Navigacija do stranice za pretragu turnira
             await page.GetByRole(AriaRole.Button, new() { Name = "Pretraga" }).ClickAsync();
             await page.WaitForSelectorAsync(".container");
 
-            // Proveri da li turnir postoji pre brisanja
             var turnirLocator = page.Locator("ul.turnir-list > li:has(app-turnir:has-text('Turnir za brisanje'))");
             var turnirCount = await turnirLocator.CountAsync();
             Assert.IsTrue(turnirCount > 0, "Turnir 'Turnir za brisanje' nije pronađen pre brisanja.");
 
-            // Klikni na turnir za brisanje
             await turnirLocator.ClickAsync();
 
 
             await turnirLocator.GetByRole(AriaRole.Button, new() { Name = "Obrisi turnir" }).ClickAsync();
 
-
-
-            // Ponovno pretražuj i proveri da li turnir više ne postoji
             await page.GetByRole(AriaRole.Button, new() { Name = "Pretraga" }).ClickAsync();
             await page.WaitForSelectorAsync(".container");
 
@@ -228,16 +211,12 @@ namespace PlaywrightTests
             await page.GotoAsync("http://localhost:4200/");
             await page.GetByRole(AriaRole.Link, new() { Name = "Login" }).ClickAsync();
 
-            // Prijava korisnika
             await page.GetByLabel("Korisničko ime:").ClickAsync();
             await page.GetByLabel("Korisničko ime:").FillAsync("dzontra");
             await page.GetByLabel("Lozinka:").FillAsync("dzontric");
             await page.GetByRole(AriaRole.Button, new() { Name = "Prijavi se" }).ClickAsync();
 
-            // Navigacija do stranice za pretragu turnira
             await page.GetByRole(AriaRole.Link, new() { Name = "Moji turniri" }).ClickAsync();
-            //var turnirLocator = page.Locator(".container ul li:has(app-turnir:has-text('Brisanje turnir - moji turniri'))");
-            //var turnirLocator = page.GetByText("Brisanje turnir - moji turniri");
             var turnirLocator = page.Locator("div.turnir")
           .Filter(new() { Has = page.Locator("h2", new() { HasText = "Brisanje turnir - moji turniri" }) });
 
@@ -246,7 +225,7 @@ namespace PlaywrightTests
             await turnirLocator.GetByRole(AriaRole.Button, new() { Name = "Obrisi turnir" }).ClickAsync();
             await page.GetByRole(AriaRole.Link, new() { Name = "Pocetna" }).ClickAsync();
             await page.GetByRole(AriaRole.Link, new() { Name = "Moji turniri" }).ClickAsync();
-            // turnirLocator = page.Locator(".container ul li:has(app-turnir:has-text('Brisanje turnir - moji turniri'))");
+
             turnirLocator = page.GetByText("Brisanje turnir - moji turniri");
             turnirCount = await turnirLocator.CountAsync();
             Assert.IsTrue(turnirCount == 0, "Turnir 'Brisanje turnir - moji turniri' je pronadjen i nakon brisanja.");

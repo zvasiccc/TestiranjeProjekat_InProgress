@@ -48,7 +48,6 @@ namespace TestiranjeProjekat.Controllers
         {
             var turnir = await _context.Turniri.FindAsync(turnirId);
             if (turnir == null) throw new NonExistingTournamentException();
-            //todo test za ovo iznad
             var organizator = _context.Turniri
                 .Where(t => t.Id == turnirId)
                 .Select(t => t.Organizator)
@@ -56,7 +55,6 @@ namespace TestiranjeProjekat.Controllers
             return organizator.Id == organizatorId;
         }
         [HttpPut("izmeniPodatkeOOrganizatoru/{organizatorId}")]
-        //todo ubaci req
         public async Task izmeniPodatkeOOrganizatoru(int organizatorId, [FromBody] OrganizatorDTO organizator)
         {
             var postojeciOrganizator = await _context.Organizatori.FindAsync(organizatorId);

@@ -5,7 +5,7 @@ using Microsoft.Playwright;
 
 namespace PlaywrightTests
 {
-    public class IgracTest
+    public class OrganizatorTest
     {
         private IPlaywright _playwright;
         private IBrowser _browser;
@@ -29,44 +29,34 @@ namespace PlaywrightTests
 
 
         [Test]
-        public async Task PrijaviSe_Igrac_Succes()
+        public async Task PrijaviSe_Organizator_Success()
 
         {
             var page = await _browser.NewPageAsync();
             await page.GotoAsync("http://localhost:4200/login");
 
-
-            await page.FillAsync("#korisnickoIme", "zeljkoLogin");
-            await page.FillAsync("#lozinka", "zeljko");
-
+            await page.FillAsync("#korisnickoIme", "organizatorLogin");
+            await page.FillAsync("#lozinka", "organizator");
 
             await page.ClickAsync("#loginButton");
 
-
-            await page.WaitForURLAsync("http://localhost:4200/");
-            var currentUrl = page.Url;
-            Assert.AreEqual("http://localhost:4200/", currentUrl);
-
-
             await page.ClickAsync("a:has-text('Profil')");
-
 
             await page.WaitForSelectorAsync(".profile-container");
             var korisnickoImeNaStranici = await page.TextContentAsync(".profile-container h1");
-            Assert.IsTrue(korisnickoImeNaStranici.Contains("Dobrodošli, zeljkoLogin"));
-
+            Assert.IsTrue(korisnickoImeNaStranici.Contains("Dobrodošli, organizatorLogin"));
 
         }
 
         [Test]
-        public async Task IzmenaPodatakaIgrac_ShouldUpdateUserInfoSuccessfully()
+        public async Task IzmenaPodatakaOrganizator_ShouldUpdateUserInfoSuccessfully()
         {
             var page = await _browser.NewPageAsync();
             await page.GotoAsync("http://localhost:4200/login");
 
 
-            await page.FillAsync("#korisnickoIme", "igracUpdate");
-            await page.FillAsync("#lozinka", "igrac");
+            await page.FillAsync("#korisnickoIme", "organizatorUpdate");
+            await page.FillAsync("#lozinka", "organizator");
             await page.ClickAsync("#loginButton");
 
             await page.GetByRole(AriaRole.Link, new() { Name = "Profil" }).ClickAsync();
@@ -82,8 +72,8 @@ namespace PlaywrightTests
             await page.ClickAsync("a:has-text('Odjavi se')");
             await page.GotoAsync("http://localhost:4200/login");
 
-            await page.FillAsync("#korisnickoIme", "igracUpdate");
-            await page.FillAsync("#lozinka", "igrac");
+            await page.FillAsync("#korisnickoIme", "organizatorUpdate");
+            await page.FillAsync("#lozinka", "organizator");
             await page.ClickAsync("#loginButton");
 
             await page.GetByRole(AriaRole.Link, new() { Name = "Profil" }).ClickAsync();
@@ -96,40 +86,46 @@ namespace PlaywrightTests
             Assert.AreEqual("novoPrezime", prezimeNaStranici);
         }
         [Test]
-        public async Task RegistracijaIgraca_ShouldRegisterAndLoginSuccessfully()
+        public async Task RegistracijaOrganizatora_ShouldRegisterAndLoginSuccessfully()
         {
             var page = await _browser.NewPageAsync();
-            await page.GotoAsync("http://localhost:4200/registracija");
 
-            await page.FillAsync("#korisnickoIme", "noviIgrac");
-            await page.FillAsync("#lozinka", "novaLozinka");
-            await page.FillAsync("#ime", "Novak");
-            await page.FillAsync("#prezime", "Novi");
-            await page.ClickAsync("#igrac");
-            await page.CheckAsync("#vodjaTima");
+            await page.GotoAsync("http://localhost:4200/");
 
-            await page.ClickAsync("#RegistracijaButton");
+            await page.GetByRole(AriaRole.Link, new() { Name = "Registracija" }).ClickAsync();
 
-            await page.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions { Timeout = 60000 });
+            await page.Locator("#organizator").CheckAsync();
 
-            await page.GotoAsync("http://localhost:4200/login");
-            var currentUrl = page.Url;
-            Assert.AreEqual("http://localhost:4200/login", currentUrl);
+            await page.GetByLabel("Korisničko ime:").ClickAsync();
+            await page.GetByLabel("Korisničko ime:").FillAsync("noviOrganizator");
+            await page.GetByLabel("Korisničko ime:").PressAsync("Tab");
 
-            await page.FillAsync("#korisnickoIme", "noviIgrac");
-            await page.FillAsync("#lozinka", "novaLozinka");
+            await page.GetByLabel("Lozinka:").FillAsync("organizator");
+            await page.GetByLabel("Lozinka:").PressAsync("Tab");
 
-            await page.ClickAsync("#loginButton");
+            await page.GetByLabel("Ime:", new() { Exact = true }).FillAsync("Milos");
+            await page.GetByLabel("Ime:", new() { Exact = true }).PressAsync("Tab");
 
-            await page.WaitForURLAsync("http://localhost:4200/");
-            currentUrl = page.Url;
-            Assert.AreEqual("http://localhost:4200/", currentUrl);
-            await page.ClickAsync("a:has-text('Profil')");
+            await page.GetByLabel("Prezime:").FillAsync("Jovanovic");
+
+            await page.GetByRole(AriaRole.Button, new() { Name = "Registruj se" }).ClickAsync();
+
+            await page.GetByRole(AriaRole.Link, new() { Name = "Login" }).ClickAsync();
+
+            await page.GetByLabel("Korisničko ime:").ClickAsync();
+            await page.GetByLabel("Korisničko ime:").FillAsync("noviOrganizator");
+            await page.GetByLabel("Lozinka:").ClickAsync();
+            await page.GetByLabel("Lozinka:").FillAsync("organizator");
+
+            await page.GetByRole(AriaRole.Button, new() { Name = "Prijavi se" }).ClickAsync();
+
+            await page.GetByRole(AriaRole.Link, new() { Name = "Profil" }).ClickAsync();
             await page.WaitForSelectorAsync(".profile-container");
-            var korisnickoImeNaStranici = await page.TextContentAsync(".profile-container h1");
-            Assert.IsTrue(korisnickoImeNaStranici.Contains("Dobrodošli, noviIgrac"));
 
+            var korisnickoImeNaStranici = await page.TextContentAsync(".profile-container h1");
+            Assert.IsTrue(korisnickoImeNaStranici.Contains("Dobrodošli, noviOrganizator"));
         }
+
 
     }
 }

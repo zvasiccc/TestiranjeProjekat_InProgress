@@ -16,7 +16,7 @@ namespace PlaywrightTests
             _playwright = await Playwright.CreateAsync();
             _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
-                Headless = false, // Pokreće preglednik sa UI-jem, ako želite bez UI-ja, postavite na `true`
+                Headless = false,
             });
         }
 
@@ -141,52 +141,23 @@ namespace PlaywrightTests
 
             await page.GotoAsync("http://localhost:4200/login");
 
-            // Prijava korisnika
+
             await page.GetByLabel("Korisničko ime:").ClickAsync();
             await page.GetByLabel("Korisničko ime:").FillAsync("proba1");
             await page.GetByLabel("Korisničko ime:").PressAsync("Tab");
             await page.GetByLabel("Lozinka:").FillAsync("proba");
             await page.GetByLabel("Lozinka:").PressAsync("Enter");
 
-            // Navigacija do stranice za pretragu i klik na "Prijavljeni timovi"
+
             await page.GetByRole(AriaRole.Button, new() { Name = "Pretraga" }).ClickAsync();
             await page.Locator("div.turnir")
            .Filter(new() { Has = page.Locator("h2", new() { HasText = "Turnir u Rzani" }) })
            .GetByRole(AriaRole.Button, new() { Name = "Prijavljeni timovi" }).ClickAsync();
 
-            // Provera da li postoji barem jedan prijavljeni tim
+
             var prijavaList = await page.QuerySelectorAllAsync("ul > li");
             Assert.IsTrue(prijavaList.Count > 0, "Nema prikazanih prijava.");
 
-            //todo ispitaj i ovo
-            // foreach (var prijava in prijavaList)
-            // {
-            //     // Proveri naziv tima
-            //     // var nazivTimaLocator = prijava.Locator("h3");
-            //     // var nazivTimaText = await nazivTimaLocator.InnerTextAsync();
-            //     // Assert.IsFalse(string.IsNullOrWhiteSpace(nazivTimaText), "Naziv tima je prazan.");
-
-            //     // Proveri da li postoji barem jedan igrač nakon naziva tima
-            //     var igraciList = await prijava.QuerySelectorAllAsync("app-igrac");
-            //     Assert.IsTrue(igraciList.Count > 0, "Nema prikazanih igrača za tim.");
-
-            //     // Opcionalno: Ako želite da proverite detalje svakog igrača
-            //     foreach (var igrac in igraciList)
-            //     {
-            //         var igracElement = await igrac.QuerySelectorAsync(".igrac");
-            //         var korisnickoIme = await igracElement.QuerySelectorAsync("p:nth-of-type(1)");
-            //         var ime = await igracElement.QuerySelectorAsync("p:nth-of-type(3)");
-            //         var prezime = await igracElement.QuerySelectorAsync("p:nth-of-type(4)");
-
-            //         var korisnickoImeText = await korisnickoIme.InnerTextAsync();
-            //         var imeText = await ime.InnerTextAsync();
-            //         var prezimeText = await prezime.InnerTextAsync();
-
-            //         Assert.IsFalse(string.IsNullOrWhiteSpace(korisnickoImeText), "Korisnicko ime igrača je prazno.");
-            //         Assert.IsFalse(string.IsNullOrWhiteSpace(imeText), "Ime igrača je prazno.");
-            //         Assert.IsFalse(string.IsNullOrWhiteSpace(prezimeText), "Prezime igrača je prazno.");
-            //     }
-            //}
         }
         [Test]
         public async Task IgracProverava_Saigrace_Na_Turniru_()
@@ -195,14 +166,14 @@ namespace PlaywrightTests
 
             await page.GotoAsync("http://localhost:4200/login");
 
-            // Prijava korisnika
+
             await page.GetByLabel("Korisničko ime:").ClickAsync();
             await page.GetByLabel("Korisničko ime:").FillAsync("proba1");
             await page.GetByLabel("Korisničko ime:").PressAsync("Tab");
             await page.GetByLabel("Lozinka:").FillAsync("proba");
             await page.GetByLabel("Lozinka:").PressAsync("Enter");
 
-            // Navigacija do stranice za pretragu i klik na "Prijavljeni timovi"
+
             await page.GetByRole(AriaRole.Button, new() { Name = "Pretraga" }).ClickAsync();
             await page.Locator("div.turnir")
            .Filter(new() { Has = page.Locator("h2", new() { HasText = "Turnir u Rzani" }) })
@@ -210,7 +181,7 @@ namespace PlaywrightTests
             var igraciList = await page.QuerySelectorAllAsync("ul.my-list > li");
             Assert.IsTrue(igraciList.Count > 0, "Nema prikazanih saigrača.");
 
-            // Proveri da li su detalji svakog saigrača ispravno prikazani
+
             foreach (var igrac in igraciList)
             {
                 var igracElement = await igrac.QuerySelectorAsync("app-igrac");

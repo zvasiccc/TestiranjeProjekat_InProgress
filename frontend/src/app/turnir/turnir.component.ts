@@ -68,11 +68,6 @@ export class TurnirComponent {
       .subscribe(() => alert('uspesno ste odjavili turnir'));
   }
   async prikaziPrijavljeneTimove(turnirId: number) {
-    console.log('iz turnir comp, turnir id je' + turnirId);
-    console.log(this.turnir);
-    //todo gde se namesta ovaj turnir
-    console.log(' samo id je' + this.turnir.id);
-    console.log('gggggggggggg');
     this.router.navigateByUrl(`prijavljeniTimovi/${this.turnir.id}`);
   }
 

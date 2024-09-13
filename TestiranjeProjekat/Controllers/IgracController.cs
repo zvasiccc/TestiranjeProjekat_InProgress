@@ -20,8 +20,8 @@ namespace TestiranjeProjekat.Controllers
         }
         [HttpGet("vratiMoguceSaigrace/{igracId}")]
         public async Task<List<IgracDTO>> VratiMoguceSaigrace(int igracId)
-        //todo izmeni parametar kao na git, izbaci id
-        {//u postmana prolazi to
+
+        {
             var igraci = await _context.Igraci
                 .Where(i => i.Id != igracId)
                 .Select(i => new IgracDTO
@@ -36,7 +36,6 @@ namespace TestiranjeProjekat.Controllers
             return igraci;
         }
         [HttpGet("korisnickoIme/{korisnickoIme}")]
-        //todo bez id,dto
         public async Task<List<Igrac>> IgraciSaSlicnimKorisnickimImenom(string korisnickoIme)
         {
             var igraci = await _context.Igraci
@@ -72,7 +71,7 @@ namespace TestiranjeProjekat.Controllers
             return igrac; //vraca igraca ili null 
         }
         [HttpPut("izmeniPodatkeOIgracu/{igracId}")]
-        //todo izmeni parametar kao na git
+
         public async Task IzmeniPodatkeOIgracu(int igracId, [FromBody] IgracDTO igrac)
         {
 
@@ -110,7 +109,7 @@ namespace TestiranjeProjekat.Controllers
 
         }
         [HttpGet("vratiIgraceIzIstogTima/{turnirId}/{igracId}")]
-        //todo lose radi
+
         public async Task<List<IgracDTO>> VratiIgraceIzIstogTima(int turnirId, int igracId)
         {
 

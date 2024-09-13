@@ -68,25 +68,7 @@ export class IgracService {
     const headers = this.storeService.pribaviHeaders();
     return this.http.get<Igrac[]>(url, { headers });
   }
-  // registrujSeKaoIgrac(igrac: Igrac): Subscription {
-  //   const url = this.urlIgrac + 'registrujIgraca';
-  //   return this.http.post(url, igrac).subscribe((p) => {
-  //     if (p == null) {
-  //       this._snackBar.open(
-  //         'Zeljeno korisnicko ime je vec u upotrebi',
-  //         'Zatvori',
-  //         {
-  //           duration: 4000,
-  //         }
-  //       );
-  //     } else {
-  //       this._snackBar.open('Uspesno ste se registrovali', 'Zatvori', {
-  //         duration: 2000,
-  //       });
-  //       this.router.navigateByUrl('');
-  //     }
-  //   });
-  // }
+
   registrujSeKaoIgrac(igrac: Igrac): Subscription {
     const url = this.urlIgrac + 'registrujIgraca';
     return this.http
