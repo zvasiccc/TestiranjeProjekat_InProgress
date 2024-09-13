@@ -132,6 +132,7 @@ namespace PlaywrightTests
            .GetByRole(AriaRole.Button, new() { Name = "Izbrisi prijavu" })
            .CountAsync();
             Assert.IsTrue(izbrisiPrijavuButtonCount0 == 0);
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/BrisanjePrijave.png" });
 
         }
         [Test]

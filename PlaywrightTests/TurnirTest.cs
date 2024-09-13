@@ -171,6 +171,7 @@ namespace PlaywrightTests
             .Locator("app-turnir")
             .Locator("text=Novokreirani turnir");
 
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/kreiraniTurnir.png" });
             turnirCount = await turnirLocator.CountAsync();
             Assert.IsTrue(turnirCount == 1);
         }
@@ -204,6 +205,7 @@ namespace PlaywrightTests
 
             turnirCount = await page.Locator("ul.turnir-list > li:has(app-turnir:has-text('Turnir za brisanje'))").CountAsync();
             Assert.IsTrue(turnirCount == 0, "Turnir 'Turnir za brisanje' je još uvek prisutan nakon brisanja.");
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/deleteTurnir_pocetna.png" });
         }
         [Test]
         public async Task ObrisiTurnir_Preko_MojihTurnira()
@@ -230,6 +232,7 @@ namespace PlaywrightTests
             turnirLocator = page.GetByText("Brisanje turnir - moji turniri");
             turnirCount = await turnirLocator.CountAsync();
             Assert.IsTrue(turnirCount == 0, "Turnir 'Brisanje turnir - moji turniri' je pronadjen i nakon brisanja.");
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/deleteTurnir_mojiturnir.png" });
 
         }
 

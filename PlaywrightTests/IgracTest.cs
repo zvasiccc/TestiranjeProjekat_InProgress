@@ -129,7 +129,21 @@ namespace PlaywrightTests
             await page.ScreenshotAsync(new() { Path = "../../../Slike/NovoregistrovaniIgrac.png" });
 
         }
+        [Test]
+        public async Task OdjavljivanjeIgraca()
+        {
+            var page = await _browser.NewPageAsync();
+            await page.GotoAsync("http://localhost:4200/");
+            await page.GetByRole(AriaRole.Link, new() { Name = "Login" }).ClickAsync();
 
+            await page.GetByLabel("Korisničko ime:").ClickAsync();
+            await page.GetByLabel("Korisničko ime:").FillAsync("proba1");
+            await page.GetByLabel("Lozinka:").FillAsync("proba");
+            await page.GetByRole(AriaRole.Button, new() { Name = "Prijavi se" }).ClickAsync();
+            await page.GetByRole(AriaRole.Link, new() { Name = "Odjavi se" }).ClickAsync();
+            await page.GotoAsync("http://localhost:4200/login");
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/IgracSeOdjavio.png" });
+        }
     }
 }
 
