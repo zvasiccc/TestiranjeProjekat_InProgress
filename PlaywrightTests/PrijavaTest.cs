@@ -157,6 +157,7 @@ namespace PlaywrightTests
 
             var prijavaList = await page.QuerySelectorAllAsync("ul > li");
             Assert.IsTrue(prijavaList.Count > 0, "Nema prikazanih prijava.");
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/Igrac_TimoviNaTurniru.png" });
 
         }
         [Test]
@@ -179,9 +180,8 @@ namespace PlaywrightTests
            .Filter(new() { Has = page.Locator("h2", new() { HasText = "Turnir u Rzani" }) })
           .GetByRole(AriaRole.Button, new() { Name = "Vidi saigrace" }).ClickAsync();
             var igraciList = await page.QuerySelectorAllAsync("ul.my-list > li");
+
             Assert.IsTrue(igraciList.Count > 0, "Nema prikazanih saigrača.");
-
-
             foreach (var igrac in igraciList)
             {
                 var igracElement = await igrac.QuerySelectorAsync("app-igrac");
@@ -197,6 +197,9 @@ namespace PlaywrightTests
                 Assert.IsFalse(string.IsNullOrWhiteSpace(imeText), "Ime saigrača je prazno.");
                 Assert.IsFalse(string.IsNullOrWhiteSpace(prezimeText), "Prezime saigrača je prazno.");
             }
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/saigraciNaTurniru.png" });
+
+
         }
 
 

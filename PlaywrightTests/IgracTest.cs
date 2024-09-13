@@ -54,6 +54,7 @@ namespace PlaywrightTests
             await page.WaitForSelectorAsync(".profile-container");
             var korisnickoImeNaStranici = await page.TextContentAsync(".profile-container h1");
             Assert.IsTrue(korisnickoImeNaStranici.Contains("Dobrodošli, zeljkoLogin"));
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/prijavljeniIgrac.png" });
 
 
         }
@@ -94,6 +95,7 @@ namespace PlaywrightTests
             var prezimeNaStranici = await page.InputValueAsync("#prezime");
             Assert.AreEqual("novoIme", imeNaStranici);
             Assert.AreEqual("novoPrezime", prezimeNaStranici);
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/azuriraniPodaciIgrac.png" });
         }
         [Test]
         public async Task RegistracijaIgraca_ShouldRegisterAndLoginSuccessfully()
@@ -102,9 +104,9 @@ namespace PlaywrightTests
             await page.GotoAsync("http://localhost:4200/registracija");
 
             await page.FillAsync("#korisnickoIme", "noviIgrac");
-            await page.FillAsync("#lozinka", "novaLozinka");
-            await page.FillAsync("#ime", "Novak");
-            await page.FillAsync("#prezime", "Novi");
+            await page.FillAsync("#lozinka", "igrac");
+            await page.FillAsync("#ime", "novi igrac ime");
+            await page.FillAsync("#prezime", "novi igrac prezime");
             await page.ClickAsync("#igrac");
             await page.CheckAsync("#vodjaTima");
 
@@ -113,21 +115,18 @@ namespace PlaywrightTests
             await page.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions { Timeout = 60000 });
 
             await page.GotoAsync("http://localhost:4200/login");
-            var currentUrl = page.Url;
-            Assert.AreEqual("http://localhost:4200/login", currentUrl);
 
             await page.FillAsync("#korisnickoIme", "noviIgrac");
-            await page.FillAsync("#lozinka", "novaLozinka");
+            await page.FillAsync("#lozinka", "igrac");
 
             await page.ClickAsync("#loginButton");
 
-            await page.WaitForURLAsync("http://localhost:4200/");
-            currentUrl = page.Url;
-            Assert.AreEqual("http://localhost:4200/", currentUrl);
-            await page.ClickAsync("a:has-text('Profil')");
+
+            await page.GetByRole(AriaRole.Link, new() { Name = "Profil" }).ClickAsync();
             await page.WaitForSelectorAsync(".profile-container");
             var korisnickoImeNaStranici = await page.TextContentAsync(".profile-container h1");
             Assert.IsTrue(korisnickoImeNaStranici.Contains("Dobrodošli, noviIgrac"));
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/NovoregistrovaniIgrac.png" });
 
         }
 

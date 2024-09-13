@@ -45,7 +45,7 @@ namespace PlaywrightTests
             await page.WaitForSelectorAsync(".profile-container");
             var korisnickoImeNaStranici = await page.TextContentAsync(".profile-container h1");
             Assert.IsTrue(korisnickoImeNaStranici.Contains("Dobrodošli, organizatorLogin"));
-
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/prijavljeniOrganizator.png" });
         }
 
         [Test]
@@ -64,8 +64,8 @@ namespace PlaywrightTests
 
             await page.ClickAsync("button:has-text('Uredi')");
 
-            await page.FillAsync("#ime", "novoIme");
-            await page.FillAsync("#prezime", "novoPrezime");
+            await page.FillAsync("#ime", "novoImeOrganizator");
+            await page.FillAsync("#prezime", "novoPrezimeOrganizator");
 
             await page.ClickAsync("button:has-text('Promeni podatke')");
 
@@ -82,8 +82,9 @@ namespace PlaywrightTests
 
             var imeNaStranici = await page.InputValueAsync("#ime");
             var prezimeNaStranici = await page.InputValueAsync("#prezime");
-            Assert.AreEqual("novoIme", imeNaStranici);
-            Assert.AreEqual("novoPrezime", prezimeNaStranici);
+            Assert.AreEqual("novoImeOrganizator", imeNaStranici);
+            Assert.AreEqual("novoPrezimeOrganizator", prezimeNaStranici);
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/azuriraniPodaciOrganizator.png" });
         }
         [Test]
         public async Task RegistracijaOrganizatora_ShouldRegisterAndLoginSuccessfully()
@@ -124,6 +125,8 @@ namespace PlaywrightTests
 
             var korisnickoImeNaStranici = await page.TextContentAsync(".profile-container h1");
             Assert.IsTrue(korisnickoImeNaStranici.Contains("Dobrodošli, noviOrganizator"));
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/NovoRegistrovaniOrganizator.png" });
+
         }
 
 

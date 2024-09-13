@@ -42,6 +42,7 @@ namespace PlaywrightTests
                 var turnirText = await turnir.InnerTextAsync();
                 Assert.IsFalse(string.IsNullOrWhiteSpace(turnirText), "Turnir je prazan.");
             }
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/TurniriIgraca.png" });
         }
         [Test]
         public async Task MojiTurniri_Kao_Organizator()
@@ -70,6 +71,7 @@ namespace PlaywrightTests
                 Assert.NotNull(prijavljeniTimoviButton);
                 Assert.NotNull(obrisiTurnirButton);
             }
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/TurniriOrganizatora.png" });
         }
 
 
@@ -87,18 +89,16 @@ namespace PlaywrightTests
             await page.GetByLabel("Lozinka:").FillAsync("proba");
             await page.GetByLabel("Lozinka:").PressAsync("Enter");
             await page.GetByRole(AriaRole.Button, new() { Name = "Pretraga" }).ClickAsync();
-            await page.WaitForSelectorAsync(".container"); // Očekuje se da se prikazuju turniri
+            await page.WaitForSelectorAsync(".container");
 
-            // Proveri da li se prikazuju neki turniri
             var turnirList = await page.QuerySelectorAllAsync(".container ul li");
             Assert.IsTrue(turnirList.Count > 0, "Nema prikazanih turnira.");
-
-            // Ako je potrebno, proveri specifične podatke o turnirima
             foreach (var turnir in turnirList)
             {
                 var turnirText = await turnir.InnerTextAsync();
                 Assert.IsFalse(string.IsNullOrWhiteSpace(turnirText), "Turnir je prazan.");
             }
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/PretragaTurnira.png" });
         }
 
         [Test]
@@ -132,6 +132,7 @@ namespace PlaywrightTests
                 var turnirText = await turnir.InnerTextAsync();
                 Assert.IsFalse(string.IsNullOrWhiteSpace(turnirText), "Turnir je prazan.");
             }
+            await page.ScreenshotAsync(new() { Path = "../../../Slike/FiltriranjeTurnira.png" });
         }
         [Test]
         public async Task KreirajTurnir()
@@ -144,7 +145,7 @@ namespace PlaywrightTests
             await page.GetByLabel("Lozinka:").FillAsync("dzontric");
             await page.GetByLabel("Lozinka:").PressAsync("Enter");
             await page.GetByRole(AriaRole.Button, new() { Name = "Pretraga" }).ClickAsync();
-            await page.WaitForSelectorAsync(".container"); // Očekuje se da se prikazuju turniri
+            await page.WaitForSelectorAsync(".container");
             var turnirLocator = page.Locator("ul.turnir-list > li")
             .Locator("app-turnir")
             .Locator("text=Novokreirani turnir");

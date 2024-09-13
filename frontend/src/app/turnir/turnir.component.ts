@@ -55,7 +55,6 @@ export class TurnirComponent {
     this.store.dispatch(
       TurnirActions.setIzabraniTurnir({ turnirId: turnir.id })
     );
-    //dodavanje trenutnog korisnika u tim
     this.store.dispatch(IgracActions.dodajIgracaUTim({ igrac }));
     this.router.navigateByUrl('sviIgraci');
   }
