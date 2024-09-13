@@ -27,7 +27,6 @@ export class MojiSaigraciComponent implements OnInit {
     this.route.params.subscribe((params) => {
       const turnirId = params['turnirId'];
       const igracId = params['igracId'];
-      console.log(turnirId + 'opa' + igracId);
       this.mojiSaigraci$ = this.igracService.vidiSaigrace(turnirId, igracId);
     });
   }

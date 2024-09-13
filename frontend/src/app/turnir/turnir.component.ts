@@ -52,9 +52,6 @@ export class TurnirComponent {
   }
   prijaviSeNaTurnir(turnir: Turnir, korisnik: Igrac | Organizator) {
     const igrac: Igrac = korisnik as Igrac;
-    console.log('iz prijavi se na turnir je turnir:');
-    console.log(turnir);
-    console.log('_____________________');
     this.store.dispatch(
       TurnirActions.setIzabraniTurnir({ turnirId: turnir.id })
     );

@@ -38,7 +38,6 @@ export class TimoviNaTurniruComponent {
     if (turnirIdParam !== null) {
       this.turnirId = +turnirIdParam;
       const idKorisnika = this.storeService.pribaviIdPrijavljenogKorisnika();
-      console.log('iz timovi na turniru comp, turnir id je' + this.turnirId);
       this.prijave$ = this.prijavaService.vratiPrijaveZaTurnir(this.turnirId);
       this.jeOrganizatorTurnira =
         this.organizatorService.daLiJeOrganizatorTurnira(

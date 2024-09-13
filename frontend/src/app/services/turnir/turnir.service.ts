@@ -37,7 +37,6 @@ export class TurnirService {
     this.trenutnoPrijavljeniKorisnik$.subscribe((korisnik) => {
       this.role = korisnik?.role as string;
     });
-    console.log(this.role);
   }
 
   getTurniriBaza(): Observable<Turnir[]> {
@@ -50,7 +49,6 @@ export class TurnirService {
     const headers = this.storeService.pribaviHeaders();
 
     var url;
-    console.log(this.role);
 
     if (this.role == 'organizator')
       url = this.turnirUrl + `mojiTurniriOrganizator/${idKorisnika}`;
@@ -69,8 +67,6 @@ export class TurnirService {
       this.idKorisnika = korisnik?.id as number;
     });
     const headers = this.storeService.pribaviHeaders();
-    console.log('TURNIR JE');
-    console.log(turnir);
     const url = this.turnirUrl + 'dodajTurnir';
     const { prijavljeniIgraci, ...turnirBezIgraca } = turnir;
     const turnirDTO = {

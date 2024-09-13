@@ -56,9 +56,8 @@ export class StoreService {
 
   vratiPrijavljeniTurnir(): Observable<Turnir> {
     return this.store.select(selectIzabraniTurnir).pipe(
-      tap((p) => console.log(p, 'Pufla')),
       filter((turnir) => !!turnir),
-      // map((turnir) => turnir as Turnir),
+
       map((p) => ({ ...p, $id: undefined } as Turnir))
     );
   }

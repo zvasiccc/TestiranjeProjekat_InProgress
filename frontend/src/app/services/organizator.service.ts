@@ -88,7 +88,6 @@ export class OrganizatorService {
     const headers = this.storeService.pribaviHeaders();
     const url =
       this.organizatorUrl + `izmeniPodatkeOOrganizatoru/${this.idKorisnika}`;
-    console.log(organizator);
     return this.http.put<Organizator>(url, organizator, { headers });
   }
 }

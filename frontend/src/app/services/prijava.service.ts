@@ -23,8 +23,6 @@ export class PrijavaService {
     const headers = this.storeService.pribaviHeaders();
 
     const url = this.prijavaUrl + 'dodajPrijavu';
-    console.log('op');
-    console.log(prijava);
     return this.http.post(url, prijava, { headers }).subscribe((p: any) => {
       if (p.porukaGreske == undefined) {
         this.store.dispatch(PrijavaActions.OcistiStore());

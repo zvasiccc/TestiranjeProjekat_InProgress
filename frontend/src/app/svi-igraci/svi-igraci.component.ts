@@ -30,7 +30,6 @@ export class SviIgraciComponent {
   trenutniTurnir: Turnir | null = null;
 
   dodajIgracaUtim(igrac: Igrac) {
-    console.log(igrac);
     this.storeService
       .vratiPrijavljeniTurnir()
       .subscribe((p) => (this.trenutniTurnir = p));
